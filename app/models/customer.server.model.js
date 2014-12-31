@@ -20,7 +20,8 @@ var mongoose = require('mongoose'),
 
 		orderItems : [OrderItemSchema],
 		dateSubmitted: Date,
-		total : Number
+		total : Number,
+		status : {type: String} //NEW, IN_PROGRESS, COMPLETED
 	});
 	mongoose.model('Order', OrderSchema);
 

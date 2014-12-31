@@ -2,6 +2,25 @@
     <div class="page-header">
         <h1>Customers</h1>
     </div>
+
+    <div>
+    <table class="table">
+        <th>
+        <tr>
+            <td>name</td>
+            <td>create Order</td>
+            <td>view Orders</td>
+        </tr>
+        </th>
+        <tr ng-repeat="customer in customers">
+            <td> {{customer.personalDetails.forename}} {{customer.personalDetails.surname}}</td>
+            <td><a href="#!/customers/{{customer._id}}/order/create" class="btn btn-success">create order</a></td>
+            <td><a href="#!/customers/{{customer._id}}/order/view" class="btn btn-primary">view orders</a></td>
+        </tr>
+    </table>
+    </div>
+
+    <!--
     <div class="list-group">
         <a data-ng-repeat="customer in customers" data-ng-href="#!/customers/{{customer._id}}" class="list-group-item">
 			<small class="list-group-item-text">
@@ -10,6 +29,7 @@
 				by
 				<span data-ng-bind="customer.user.displayName"></span>
 			</small>
+
 			<h4 class="list-group-item-heading" data-ng-bind="customer.personalDetails.forename"></h4>
             <div class="list-group">
                 <div class="list-group-item">{{customer.personalDetails.forename}} {{customer.personalDetails.surname}}</div>
@@ -21,8 +41,11 @@
                 <div class="list-group-item">city : {{customer.addressDetails.city}}</div>
                 <div class="list-group-item">postal code : {{customer.addressDetails.postCode}}</div>
             </div>
+
         </a>
     </div>
+    -->
+
     <div class="alert alert-warning text-center" data-ng-hide="!customers.$resolved || customers.length">
     	No Customers yet, why don't you <a href="/#!/customers/create">create one</a>?
     </div>

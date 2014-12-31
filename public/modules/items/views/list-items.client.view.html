@@ -11,6 +11,8 @@
 				<span data-ng-bind="item.user.displayName"></span>
 			</small>
 			<h4 class="list-group-item-heading" data-ng-bind="item.name"></h4>
+            <span style="'font-size:11px;"><i class="glyphicon glyphicon-gbp"></i>{{item.price}}</span>
+
         </a>
     </div>
     <div class="alert alert-warning text-center" data-ng-hide="!items.$resolved || items.length">

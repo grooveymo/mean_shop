@@ -1,0 +1,34 @@
+<section data-ng-controller="CustomersController" data-ng-init="findOne()">
+	<div class="page-header">
+		<h1 data-ng-bind="customer.name"></h1>
+	</div>
+	<div class="pull-right" data-ng-show="authentication.user._id == customer.user._id">
+		<a class="btn btn-primary" href="/#!/customers/{{customer._id}}/edit">
+			<i class="glyphicon glyphicon-edit"></i>
+		</a>
+		<a class="btn btn-primary" data-ng-click="remove();">
+			<i class="glyphicon glyphicon-trash"></i>
+		</a>
+	</div>
+	<small>
+		<em class="text-muted">
+			Posted on
+			<span data-ng-bind="customer.created | date:'mediumDate'"></span>
+			by
+			<span data-ng-bind="customer.user.displayName"></span>
+		</em>
+
+		<h4 class="list-group-item-heading" data-ng-bind="customer.personalDetails.forename"></h4>
+		<div class="list-group">
+			<div class="list-group-item">{{customer.personalDetails.forename}} {{customer.personalDetails.surname}}</div>
+			<div class="list-group-item">{{customer.personalDetails.dob}}</div>
+			<div class="list-group-item">office : {{customer.phoneDetails.office}}</div>
+			<div class="list-group-item">home : {{customer.phoneDetails.home}}</div>
+			<div class="list-group-item">mobile : {{customer.phoneDetails.mobile}}</div>
+			<div class="list-group-item">1st Line : {{customer.addressDetails.firstLine}}</div>
+			<div class="list-group-item">city : {{customer.addressDetails.city}}</div>
+			<div class="list-group-item">postal code : {{customer.addressDetails.postCode}}</div>
+		</div>
+
+	</small>
+</section>

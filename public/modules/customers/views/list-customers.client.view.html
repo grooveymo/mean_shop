@@ -14,7 +14,7 @@
         </th>
         <tr ng-repeat="customer in customers">
             <td> {{customer.personalDetails.forename}} {{customer.personalDetails.surname}}</td>
-            <td><a href="#!/customers/{{customer._id}}/order/create" class="btn btn-success">create order</a></td>
+            <td><a data-ng-href="#!/customers/{{customer._id}}/order/create" class="btn btn-success">create order</a></td>
             <td><a href="#!/customers/{{customer._id}}/order/view" class="btn btn-primary">view orders</a></td>
         </tr>
     </table>

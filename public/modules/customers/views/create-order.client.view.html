@@ -1,0 +1,58 @@
+<section data-ng-controller="OrdersController" data-ng-init="findAllItems()">
+    <div class="page-header">
+        <h1>New Order</h1>
+        <h2>for customer : {{customer.personalDetails.forename}} {{customer.personalDetails.surname}}</h2>
+    </div>
+    <div class="'col-md-12">
+        <table class="table">
+            <tr>
+                <th>
+                    Item Name
+                </th>
+                <th>
+                    Item description
+                </th>
+                <th>
+                    Item Price
+                </th>
+                <th>
+                    Add to basket
+                </th>
+            </tr>
+            <tr ng-repeat="item in items">
+                <td>{{item.name}} [{{item._id}}] </td>
+                <td>{{item.description}}</td>
+                <td>{{item.price}}</td>
+                <td><a href="" ng-click="addOrderItem(item)">add</a></td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div class="col-md-12">
+        <table class="table">
+            <tr>
+                <th>
+                    Item Name
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    remove from basket
+                </th>
+            </tr>
+            <tr ng-repeat="orderItem in orderItems">
+                <td>{{orderItem.name}} </td>
+                <td>{{orderItem.quantity}}</td>
+                <td><a href="" ng-click="removeOrderItem(orderItem)">remove</a></td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div class="col-md-12">
+        <form class="form-horizontal" data-ng-submit="create()" novalidate>
+        </form>
+    </div>
+</section>

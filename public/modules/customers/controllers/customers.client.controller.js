@@ -88,7 +88,8 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		$scope.orderItems = [];
 
 		/**
-		 * Find all items that can be purchased.
+		 * Find all items that can be purchased. display this in the view
+		 * and user can make selections using addORderItem/removeOrderItem
 		 */
 		$scope.findAllItems = function() {
 			console.log('{create order1 : customer = ' + $stateParams.customerId);
@@ -167,77 +168,81 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		};
 
 
-		// Create new Customer
+		// Create new Order
 		$scope.create = function() {
-			var personalDetails = {forename:''};
-			// Create new Customer object
-			var customer = new Customers ({
-//				name: this.name
-				personalDetails : {
-					forename : this.forename,
-					surname : this.surname,
-					dob : this.dob
-				},
-				addressDetails : {
-					firstLine : this.firstLine,
-					city : this.city,
-					postCode : this.postCode
-				},
-				phoneDetails : {
-					office : this.office,
-					home : this.home,
-					mobile : this.mobile
-				}
-			});
 
-			// Redirect after save
-			customer.$save(function(response) {
-				$location.path('customers/' + response._id);
-
-				// Clear form fields
-				$scope.forename = '';
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		// Remove existing Customer
-		$scope.remove = function( customer ) {
-			if ( customer ) { customer.$remove();
-
-				for (var i in $scope.customers ) {
-					if ($scope.customers [i] === customer ) {
-						$scope.customers.splice(i, 1);
-					}
-				}
-			} else {
-				$scope.customer.$remove(function() {
-					$location.path('customers');
-				});
+			if($scope.orderItems.length > 0) {
+				//use $resource to create Order for Customer
 			}
+//			var personalDetails = {forename:''};
+//			// Create new Customer object
+//			var customer = new Customers ({
+////				name: this.name
+//				personalDetails : {
+//					forename : this.forename,
+//					surname : this.surname,
+//					dob : this.dob
+//				},
+//				addressDetails : {
+//					firstLine : this.firstLine,
+//					city : this.city,
+//					postCode : this.postCode
+//				},
+//				phoneDetails : {
+//					office : this.office,
+//					home : this.home,
+//					mobile : this.mobile
+//				}
+//			});
+//
+//			// Redirect after save
+//			customer.$save(function(response) {
+//				$location.path('customers/' + response._id);
+//
+//				// Clear form fields
+//				$scope.forename = '';
+//			}, function(errorResponse) {
+//				$scope.error = errorResponse.data.message;
+//			});
 		};
 
-		// Update existing Customer
+		// Remove existing Order
+		$scope.remove = function( customer ) {
+			//if ( customer ) { customer.$remove();
+            //
+			//	for (var i in $scope.customers ) {
+			//		if ($scope.customers [i] === customer ) {
+			//			$scope.customers.splice(i, 1);
+			//		}
+			//	}
+			//} else {
+			//	$scope.customer.$remove(function() {
+			//		$location.path('customers');
+			//	});
+			//}
+		};
+
+		// Update existing Order
 		$scope.update = function() {
-			var customer = $scope.customer ;
-
-			customer.$update(function() {
-				$location.path('customers/' + customer._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+			//var customer = $scope.customer ;
+            //
+			//customer.$update(function() {
+			//	$location.path('customers/' + customer._id);
+			//}, function(errorResponse) {
+			//	$scope.error = errorResponse.data.message;
+			//});
 		};
 
-		// Find a list of Customers
+		// Find a list of Orders
 		$scope.find = function() {
-			$scope.customers = Customers.query();
+			//$scope.customers = Customers.query();
 		};
 
-		// Find existing Customer
+		// Find existing Order
 		$scope.findOne = function() {
-			$scope.customer = Customers.get({
-				customerId: $stateParams.customerId
-			});
+			//$scope.customer = Customers.get({
+			//	customerId: $stateParams.customerId
+			//});
 		};
 	}
 ]);

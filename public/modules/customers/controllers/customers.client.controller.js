@@ -137,7 +137,10 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		};
 
 
-
+		/**
+		 * called by remove OrderItem button in view
+		 * @param selectedOrderItem The item the user wants to remove from the order.
+		 */
 		$scope.removeOrderItem = function(selectedOrderItem) {
 
 			if(!Array.prototype.filter) {

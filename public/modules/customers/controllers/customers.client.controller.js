@@ -122,7 +122,9 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			}
 			//find element in array that matches the 'selectedItem'
 			var orderItem = $scope.orderItems.filter(function(obj){
-				return obj.itemId === selectedItem._id;
+//				return obj.itemId === selectedItem._id;
+//				return obj._id === selectedItem._id;
+				return obj.item === selectedItem._id;
 			});
 
 			console.log(' found item : ' + JSON.stringify(orderItem));
@@ -130,7 +132,9 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 				console.log('found item will increment quantity');
 				orderItem[0].quantity += 1;
 			} else {
-				var newOrderItem = { itemId: this.item._id, name: this.item.name, price : this.item.price, quantity : 1 };
+//				var newOrderItem = { itemId: this.item._id, name: this.item.name, price : this.item.price, quantity : 1 };
+//				var newOrderItem = { _id: this.item._id, price : this.item.price, quantity : 1 };
+				var newOrderItem = { item: this.item._id, price : this.item.price, quantity : 1 };
 				$scope.orderItems.push(newOrderItem);
 			}
 

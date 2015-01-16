@@ -31,10 +31,13 @@ exports.create = function(req, res) {
 //        if (! customer) return next(new Error('Failed to load Customer ' + id));
         if (! customer) throw (new Error('Failed to load Customer ' + customerId));
 
-        console.log('located Customer: ' + JSON.stringify(customer));
-        var order = new Order(req.body);
+        console.log('1.) located Customer: ' + JSON.stringify(customer));
+        console.log('2.) Order in raw format: ' + JSON.stringify(req.body));
+//        var order = new Order(req.body);
 
-        console.log('created Order instance: ' + JSON.stringify(order));
+//        console.log('3.) created Order instance: ' + JSON.stringify(order));
+
+        var order = req.body;
 
         customer.orders.push(order);
 
@@ -45,7 +48,17 @@ exports.create = function(req, res) {
                     message: errorHandler.getErrorMessage(err)
                 });
             } else {
-                res.jsonp(customer);
+
+                //test that order has bee saved correctly
+                Customer.findById(customerId).populate('orders.orderItems.item').exec(function(err, cust){
+                    if (! customer) throw (new Error('Failed to load Customer ' + customerId));
+
+                    console.log('Saved Customer: ' + JSON.stringify(cust) );
+                    res.jsonp(customer);
+
+                });
+                //end test
+//                res.jsonp(customer);
             }
         });
 

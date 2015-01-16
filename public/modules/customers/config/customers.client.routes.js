@@ -24,6 +24,10 @@ angular.module('customers').config(['$stateProvider',
 		state('createOrder', {
 			url: '/customers/:customerId/order/create',
 			templateUrl: 'modules/customers/views/create-order.client.view.html'
+		}).
+		state('listOrders', {
+			url: '/customers/:customerId/order/list',
+			templateUrl: 'modules/customers/views/list-order.client.view.html'
 		});
 
 

@@ -234,6 +234,10 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		// Find a list of Orders
 		$scope.find = function() {
 			//$scope.customers = Customers.query();
+			$scope.orders = Orders.query({customerId:$stateParams.customerId}, function(err, data){
+				console.log('retrieved orders for customer: ' + $stateParams.customerId);
+				console.log('results: ' + JSON.stringify(data));
+			});
 		};
 
 		// Find existing Order

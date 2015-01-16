@@ -27,15 +27,11 @@ exports.create = function(req, res) {
 
     console.log('passed customer id : ' + customerId);
     Customer.findById(customerId).exec(function(err, customer) {
-//        if (err) return next(err);
-//        if (! customer) return next(new Error('Failed to load Customer ' + id));
+
         if (! customer) throw (new Error('Failed to load Customer ' + customerId));
 
         console.log('1.) located Customer: ' + JSON.stringify(customer));
         console.log('2.) Order in raw format: ' + JSON.stringify(req.body));
-//        var order = new Order(req.body);
-
-//        console.log('3.) created Order instance: ' + JSON.stringify(order));
 
         var order = req.body;
 
@@ -68,7 +64,7 @@ exports.create = function(req, res) {
     //Option 2:
     //step1 : Create new Order instance
     //step2: locate Customer and perform update.
-
+    //used findByIdAndUpdate()
 
     //var order = new Order(req.body);
     //
@@ -143,6 +139,32 @@ exports.create = function(req, res) {
 //    }
 //});
 //};
+exports.list = function(req, res) {
+
+    var customerId = req.params.customerId;
+
+    console.log('[list] passed customer id : ' + customerId);
+
+    Customer.findById(customerId).populate('orders orders.orderItems orders.orderItems.item').exec(function(err, customer){
+
+        if (err) {
+            return res.status(400).send({
+                                            message: errorHandler.getErrorMessage(err)
+                                        });
+        }
+        else {
+            var orders = customer.orders;
+            console.log('Customer has num orders: ' + orders.length);
+            console.log('Customer has following orders: ' + JSON.stringify(orders));
+            res.jsonp(orders);
+        };
+
+
+    });
+
+
+};
+
 
 /**
  * Customer middleware

@@ -1,23 +1,26 @@
-<section data-ng-controller="CustomersController" data-ng-init="find()">
+<section data-ng-controller="OrdersController" data-ng-init="find()">
     <div class="page-header">
-        <h1>Customers</h1>
+        <h1>Orders for {{customer.personalDetails.forename}} {{customer.personalDetails.surname}}</h1>
     </div>
 
-    <div>
-    <table class="table">
-        <th>
-        <tr>
-            <td>name</td>
-            <td>create Order</td>
-            <td>view Orders</td>
-        </tr>
-        </th>
-        <tr ng-repeat="customer in customers">
-            <td> {{customer.personalDetails.forename}} {{customer.personalDetails.surname}}</td>
-            <td><a data-ng-href="#!/customers/{{customer._id}}/order/create" class="btn btn-success">create order</a></td>
-            <td><a href="#!/customers/{{customer._id}}/order/list" class="btn btn-primary">view orders</a></td>
-        </tr>
-    </table>
+    <h1>No of orders: {{orders.length}}</h1>
+    <div ng-repeat="order in orders">
+        <h1>No of orderItems: {{order.orderItems}}</h1>
+
+        <table class="table">
+            <th>
+                <tr>
+                    <td>item</td>
+                    <td>price</td>
+                    <td>quantity</td>
+                </tr>
+            </th>
+            <tr ng-repeat="orderItem in order.orderItems">
+                <td>{{orderItem.item.name}}</td>
+                <td>{{orderItem.item.price}}</td>
+                <td>{{orderItem.quantity}}</td>
+            </tr>
+        </table>
     </div>
 
     <!--
@@ -47,6 +50,6 @@
     -->
 
     <div class="alert alert-warning text-center" data-ng-hide="!customers.$resolved || customers.length">
-    	No Customers yet, why don't you <a href="/#!/customers/create">create one</a>?
+        No Customers yet, why don't you <a href="/#!/customers/create">create one</a>?
     </div>
 </section>

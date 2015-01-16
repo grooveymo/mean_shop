@@ -19,9 +19,13 @@ var mongoose = require('mongoose'),
 	var OrderSchema = new Schema({
 
 		orderItems : [OrderItemSchema],
-		dateSubmitted: Date,
+		dateSubmitted: {
+			type: Date,
+			default: Date.now
+		},
 		total : Number,
-		status : {type: String} //NEW, IN_PROGRESS, COMPLETED
+		status : {type: String,
+		 		  default: 'NEW'} //NEW, IN_PROGRESS, COMPLETED
 	});
 	mongoose.model('Order', OrderSchema);
 

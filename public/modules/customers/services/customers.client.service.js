@@ -10,4 +10,17 @@ angular.module('customers').factory('Customers', ['$resource',
 			}
 		});
 	}
+])
+	//New $resource for Orders
+.factory('Orders', ['$resource',
+	function($resource) {
+		return $resource('customers/:customerId/orders/:orderId',
+			{ customerId: '@customerId',
+			  orderId : '@orderId'
+			}, {
+			update: {
+				method: 'PUT'
+			}
+		});
+	}
 ]);

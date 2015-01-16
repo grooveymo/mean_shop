@@ -81,8 +81,8 @@ angular.module('customers').controller('CustomersController', ['$scope', '$state
 ]);
 //=========================================================================
 // Customers controller
-angular.module('customers').controller('OrdersController', ['$scope', '$stateParams', '$location', 'Authentication', 'Customers', 'Items',
-	function($scope, $stateParams, $location, Authentication, Customers, Items ) {
+angular.module('customers').controller('OrdersController', ['$scope', '$stateParams', '$location', 'Authentication', 'Customers', 'Items', 'Orders',
+	function($scope, $stateParams, $location, Authentication, Customers, Items, Orders ) {
 		$scope.authentication = Authentication;
 
 		$scope.orderItems = [];
@@ -122,7 +122,7 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			}
 			//find element in array that matches the 'selectedItem'
 			var orderItem = $scope.orderItems.filter(function(obj){
-				return obj.id === selectedItem._id;
+				return obj.itemId === selectedItem._id;
 			});
 
 			console.log(' found item : ' + JSON.stringify(orderItem));
@@ -130,7 +130,7 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 				console.log('found item will increment quantity');
 				orderItem[0].quantity += 1;
 			} else {
-				var newOrderItem = { id: this.item._id, name: this.item.name, price : this.item.price, quantity : 1 };
+				var newOrderItem = { itemId: this.item._id, name: this.item.name, price : this.item.price, quantity : 1 };
 				$scope.orderItems.push(newOrderItem);
 			}
 
@@ -171,39 +171,33 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		// Create new Order
 		$scope.create = function() {
 
+			console.log('XXXX');
 			if($scope.orderItems.length > 0) {
 				//use $resource to create Order for Customer
+
+				var total = 0.0;
+				$scope.orderItems.forEach(function(entry){
+					total += (entry.price * entry.quantity);
+				});
+
+				//var order = {orderItems : $scope.orderItems, orderTotal : total};
+                //
+				//console.log('Will create an Order for : ' + JSON.stringify(order));
+				console.log('about to persist new Order');
+
+				var persistedOrder = new Orders({
+					customerId: $stateParams.customerId, orderItems : $scope.orderItems, total : total
+				});
+
+				persistedOrder.$save(function(response) {
+					$location.path('customers/' + response._id);
+					console.log('successfully persisted order..');
+					// Clear form fields
+//					$scope.forename = '';
+				}, function(errorResponse) {
+					$scope.error = errorResponse.data.message;
+				});
 			}
-//			var personalDetails = {forename:''};
-//			// Create new Customer object
-//			var customer = new Customers ({
-////				name: this.name
-//				personalDetails : {
-//					forename : this.forename,
-//					surname : this.surname,
-//					dob : this.dob
-//				},
-//				addressDetails : {
-//					firstLine : this.firstLine,
-//					city : this.city,
-//					postCode : this.postCode
-//				},
-//				phoneDetails : {
-//					office : this.office,
-//					home : this.home,
-//					mobile : this.mobile
-//				}
-//			});
-//
-//			// Redirect after save
-//			customer.$save(function(response) {
-//				$location.path('customers/' + response._id);
-//
-//				// Clear form fields
-//				$scope.forename = '';
-//			}, function(errorResponse) {
-//				$scope.error = errorResponse.data.message;
-//			});
 		};
 
 		// Remove existing Order

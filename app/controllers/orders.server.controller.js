@@ -127,19 +127,13 @@ exports.create = function(req, res) {
 //};
 
 /**
- * List of Customers
+ * List of Orders for a Customer
  */
-//exports.list = function(req, res) { Customer.find().sort('-created').populate('user', 'displayName').exec(function(err, customers) {
-//    if (err) {
-//        return res.status(400).send({
-//            message: errorHandler.getErrorMessage(err)
-//        });
-//    } else {
-//        res.jsonp(customers);
-//    }
-//});
-//};
 exports.list = function(req, res) {
+
+    //it's a GET and not POST, so customerId is supplied as a request params.
+    //compare to the POST in the create() method which gets hold of the customerId
+    //via req.body.customerId since the data passed in POST is in the body.
 
     var customerId = req.params.customerId;
 

@@ -14,73 +14,83 @@ var mongoose = require('mongoose'),
 
 /**
  * Create a Order
+ * Demo this in 2 ways
+ *  a.) Option I - Save Changes
+ *      1. Get Customer
+ *      2. Update Customer.Orders array by pushing new Order
+ *      3. Save Customer
+ *
+ *  b.) Option II - database update
+ *      1. use findByIdAndUpdate()
  */
 exports.create = function(req, res) {
 
     console.log('[DDT] order.server.controller > body: ' + JSON.stringify(req.body));
 
-    //Option 1:
+    //get customer id
+    var customerId = req.body.customerId;
+    console.log('passed customer id : ' + customerId);
+
+    //Option I:
     //step1 : retrieve Customer
     //step2 : push new Order into Customers list of orders
     //step 3: persist customer
-    var customerId = req.body.customerId;
-
-    console.log('passed customer id : ' + customerId);
-    Customer.findById(customerId).exec(function(err, customer) {
-
-        if (! customer) throw (new Error('Failed to load Customer ' + customerId));
-
-        console.log('1.) located Customer: ' + JSON.stringify(customer));
-        console.log('2.) Order in raw format: ' + JSON.stringify(req.body));
-
-        var order = req.body;
-
-        customer.orders.push(order);
-
-        customer.save(function(err) {
-            if (err) {
-                console.log('[ERROR] : ' + err);
-                return res.status(400).send({
-                    message: errorHandler.getErrorMessage(err)
-                });
-            } else {
-
-                //test that order has bee saved correctly
-                Customer.findById(customerId).populate('orders.orderItems.item').exec(function(err, cust){
-                    if (! customer) throw (new Error('Failed to load Customer ' + customerId));
-
-                    console.log('Saved Customer: ' + JSON.stringify(cust) );
-                    res.jsonp(customer);
-
-                });
-                //end test
-//                res.jsonp(customer);
-            }
-        });
-
-//        next();
-    });
+    //Customer.findById(customerId).exec(function(err, customer) {
+    //
+    //    if (! customer) throw (new Error('Failed to load Customer ' + customerId));
+    //
+    //    console.log('1.) located Customer: ' + JSON.stringify(customer));
+    //    console.log('2.) Order in raw format: ' + JSON.stringify(req.body));
+    //
+    //    var order = req.body;
+    //
+    //    customer.orders.push(order);
+    //
+    //    customer.save(function(err) {
+    //        if (err) {
+    //            console.log('[ERROR] : ' + err);
+    //            return res.status(400).send({
+    //                message: errorHandler.getErrorMessage(err)
+    //            });
+    //        } else {
+    //
+    //            //test that order has bee saved correctly
+    //            Customer.findById(customerId).populate('orders.orderItems.item').exec(function(err, cust){
+    //                if (! customer) throw (new Error('Failed to load Customer ' + customerId));
+    //
+    //                console.log('Saved Customer: ' + JSON.stringify(cust) );
+    //                res.jsonp(customer);
+    //
+    //            });
+    //            //end test
+    //        }
+    //    });
+    //});
 
     //Option 2:
     //step1 : Create new Order instance
     //step2: locate Customer and perform update.
     //used findByIdAndUpdate()
 
-    //var order = new Order(req.body);
-    //
-    //console.log('[DDT] order.server.controller > Order: ' + JSON.stringify(order));
-    //
-    //
-    //order.save(function(err) {
-    //    if (err) {
-    //        console.log('[ERROR] : ' + err);
-    //        return res.status(400).send({
-    //            message: errorHandler.getErrorMessage(err)
-    //        });
-    //    } else {
-    //        res.jsonp(order);
-    //    }
-    //});
+    //extract the order object - used to update the Customer.orders array
+    var order = req.body;
+
+    /**
+     * @params customerId - the customer id
+     * @params order - use $push to insert a new order into the Customers array of orders
+     * safe - Use Mongo's Write Concerns to force it to write the data to disk (ensures no data lost)
+     * upsert - perform insert if update not possible which is the case here although seems to work without this config
+     */
+    Customer.findByIdAndUpdate(customerId, {$push : {orders:order}},{safe:true, upsert:true}, function(err, updatedCustomer){
+
+        if (! updatedCustomer) throw (new Error('Failed to load Customer ' + customerId));
+
+        console.log('updated Customer : ' + JSON.stringify(updatedCustomer));
+
+        res.jsonp(updatedCustomer);
+    });
+
+
 };
 
 /**
@@ -151,7 +161,7 @@ exports.list = function(req, res) {
             console.log('Customer has num orders: ' + orders.length);
             console.log('Customer has following orders: ' + JSON.stringify(orders));
             res.jsonp(orders);
-        };
+        }
 
 
     });

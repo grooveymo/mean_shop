@@ -10,7 +10,8 @@ var mongoose = require('mongoose'),
     errorHandler = require('./errors'),
     Customer = mongoose.model('Customer'),
     Order = mongoose.model('Order'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    ObjectId = require('mongoose').Types.ObjectId;
 
 /**
  * Create a Order
@@ -22,6 +23,12 @@ var mongoose = require('mongoose'),
  *
  *  b.) Option II - database update
  *      1. use findByIdAndUpdate()
+ *
+ *
+ *  think option II is better to avoid concurrent issues.
+ *  Assume that in case I, you and another party retrieve Customer,
+ *  then each of you perform update. The last one will be performing update
+ *  on stale version.
  */
 exports.create = function(req, res) {
 
@@ -96,9 +103,61 @@ exports.create = function(req, res) {
 /**
  * Show the current Customer
  */
-//exports.read = function(req, res) {
-//    res.jsonp(req.customer);
-//};
+exports.read = function(req, res) {
+    console.log('Arived at the server..');
+    console.log('req.params: ' + JSON.stringify(req.params));
+    console.log('req.body: ' + JSON.stringify(req.body));
+
+    //option 3- find customer by id and then use aggregation framework to only return required Order
+//    Customer.find({'_id':req.params.customerId},
+//                    {
+//
+////                    $match:{'orders._id':req.params.orderId},
+//                     orders:{$elemMatch:{_id:req.params.orderId}}
+//                    },
+//        function(err, customer){
+//            if(err) console.log(err);
+//            if(!customer) throw (new Error('failed to load order'));
+//        console.log('retrieved customer: ' + JSON.stringify(customer));
+//        res.jsonp(customer[0].orders[0]);
+//    });
+//
+
+    Customer.find({'_id':req.params.customerId},
+        {
+
+//                    $match:{'orders._id':req.params.orderId},
+            orders:{$elemMatch:{_id:req.params.orderId}}
+        })
+        //do we need orders/order.orderItems. We only use references from Item model so maybe just declare this in the populate mehtod.
+            .populate('orders orders.orderItems orders.orderItems.item').exec(
+
+                function(err, customer){
+                    if(err) console.log(err);
+                    if(!customer) throw (new Error('failed to load order'));
+                    console.log('retrieved customer: ' + JSON.stringify(customer));
+                res.jsonp(customer[0].orders[0]);
+        });
+
+
+
+    //option 2
+////    Customer.aggregate({$match:{'_id':req.params.customerId, 'orders._id':req.params.orderId}},function(er, res){
+//    Customer.aggregate({$match:{'_id': ObjectId(req.params.customerId)}},function(er, res){
+////    Customer.aggregate({$match:{'_id': ObjectId(req.params.customerId), 'orders._id':ObjectId(req.params.orderId) }},function(er, res){
+//
+//                        console.log('RESULT: '+ JSON.stringify(res));
+//    });
+
+
+
+    //option 1
+    //Customer.find({'_id':req.params.customerId, 'orders._id':req.params.orderId}, function(err, order){
+    //    if(!order) throw (new Error('failed to load order'));
+    //    console.log('retrieved Order: ' + JSON.stringify(order));
+    //    res.jsonp(order);
+    //});
+};
 
 /**
  * Update a Customer
@@ -149,6 +208,7 @@ exports.list = function(req, res) {
 
     console.log('[list] passed customer id : ' + customerId);
 
+    //do we need orders/order.orderItems. We only use references from Item model so maybe just declare this in the populate mehtod.
     Customer.findById(customerId).populate('orders orders.orderItems orders.orderItems.item').exec(function(err, customer){
 
         if (err) {

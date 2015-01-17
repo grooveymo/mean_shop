@@ -5,8 +5,16 @@
 
     <h1>No of orders: {{orders.length}}</h1>
 
-    <div class="" >
-        <a data-ng-repeat="order in orders" data-ng-href="" class="">
+    <div class="">
+
+        Customer: {{customerId}}
+        <!-- ***** NEED TO WIRE IN CONTROLLER TO VIEW INDIVIDUAL ORDERS - SEE data-ng-href attrib below-->
+        <!--
+        <a data-ng-repeat="order in orders" data-ng-href="#!/customers/{{customer._id}}/orders/{{order._id}}" class="">
+        -->
+        <a data-ng-repeat="order in orders" data-ng-href="#!/customers/{{customerId}}/order/{{order._id}}" class="">
+            <span style="color:red;">Order: {{order._id}}</span>
+            Order: {{order}}
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h4 class="">Order {{$index}} (total : £{{order.total}})</h4>

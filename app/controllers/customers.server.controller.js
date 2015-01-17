@@ -40,6 +40,7 @@ exports.create = function(req, res) {
  * Show the current Customer
  */
 exports.read = function(req, res) {
+	console.log('OVER HERE !!!!!!!');
 	res.jsonp(req.customer);
 };
 

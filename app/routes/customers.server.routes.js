@@ -16,11 +16,12 @@ module.exports = function(app) {
 		.delete(users.requiresLogin, customers.hasAuthorization, customers.delete);
 
 	//---------------- insert -----------
-//	app.route('/customers/:customerId/orders/:orderId')
 	app.route('/customers/:customerId/orders')
 		.post(users.requiresLogin, orders.create) //This url will be serviced by the method #create() inside the orders.server.controller
 		.get(users.requiresLogin, orders.list);
 
+	app.route('/customers/:customerId/orders/:orderId')
+		.get(users.requiresLogin, orders.read);
 
 
 

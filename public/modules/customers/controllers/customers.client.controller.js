@@ -222,6 +222,7 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 
 		// Update existing Order
 		$scope.update = function() {
+			console.log('TODO - Not Yet Implemented');
 			//var customer = $scope.customer ;
             //
 			//customer.$update(function() {

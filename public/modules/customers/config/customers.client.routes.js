@@ -32,8 +32,13 @@ angular.module('customers').config(['$stateProvider',
 		state('ViewSpecificOrder', {
 			url: '/customers/:customerId/order/:orderId',
 			templateUrl: 'modules/customers/views/view-order.client.view.html'
+		}).
+		state('EditSpecificOrder', {
+			url: '/customers/:customerId/order/:orderId/edit',
+			templateUrl: 'modules/customers/views/edit-order.client.view.html'
 		});
 
+		// #!/customers/{{customerId}}/order/{{order._id}}/edit
 
 		//#!/customers/{{customer._id}}/order/create
 	}

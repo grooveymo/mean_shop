@@ -122,37 +122,37 @@ exports.read = function(req, res) {
     console.log('req.params: ' + JSON.stringify(req.params));
     console.log('req.body: ' + JSON.stringify(req.body));
 
-    //option 3- find customer by id and then use aggregation framework to only return required Order
-//    Customer.find({'_id':req.params.customerId},
-//                    {
-//
-////                    $match:{'orders._id':req.params.orderId},
-//                     orders:{$elemMatch:{_id:req.params.orderId}}
-//                    },
-//        function(err, customer){
-//            if(err) console.log(err);
-//            if(!customer) throw (new Error('failed to load order'));
-//        console.log('retrieved customer: ' + JSON.stringify(customer));
-//        res.jsonp(customer[0].orders[0]);
-//    });
-//
-
-    //find customer, project only matching order and then use populate to pull it back
-    Customer.find({'_id':req.params.customerId}, //query parameter
-        {
-            //will only return 1st matching element of orders array
-            orders:{$elemMatch:{_id:req.params.orderId}}
-        }) // projection parameter
+    //option 2- find Order by Combination of Customer and Order id and then use projection to only return required Order
+    //This uses the $ positional operator and will return the Customer object (minimally populated?) with only the
+    //matching order.
+    Customer.find({_id:req.params.customerId,  orders :{$elemMatch:{_id:req.params.orderId}}},{'orders.$':1})
         //do we need orders/order.orderItems. We only use references from Item model so maybe just declare this in the populate mehtod.
-            .populate('orders orders.orderItems orders.orderItems.item').exec(
+        .populate('orders orders.orderItems orders.orderItems.item').exec(
 
-                function(err, customer){
-                    if(err) console.log(err);
-                    if(!customer) throw (new Error('failed to load order'));
-                    console.log('retrieved customer: ' + JSON.stringify(customer));
-                res.jsonp(customer[0].orders[0]);
+        function(err, customer){
+            if(err) console.log(err);
+            if(!customer) throw (new Error('failed to load order'));
+            console.log('[XXX] retrieved Order: ' + JSON.stringify(customer));
+            res.jsonp(customer[0].orders[0]);
         });
 
+
+    ////option 1 - find customer, project only matching order and then use populate to pull it back
+    //Customer.find({'_id':req.params.customerId}, //query parameter
+    //    {
+    //        //will only return 1st matching element of orders array
+    //        orders:{$elemMatch:{_id:req.params.orderId}}
+    //    }) // projection parameter
+    //    //do we need orders/order.orderItems. We only use references from Item model so maybe just declare this in the populate mehtod.
+    //        .populate('orders orders.orderItems orders.orderItems.item').exec(
+    //
+    //            function(err, customer){
+    //                if(err) console.log(err);
+    //                if(!customer) throw (new Error('failed to load order'));
+    //                console.log('retrieved customer: ' + JSON.stringify(customer));
+    //            res.jsonp(customer[0].orders[0]);
+    //    });
+    //
 
 };
 

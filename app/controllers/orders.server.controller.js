@@ -138,6 +138,8 @@ exports.read = function(req, res) {
 
 
     ////option 1 - find customer, project only matching order and then use populate to pull it back
+    ////This will return a Customer instance with the orders array containing a single element,
+    //// i.e. our required order instance
     //Customer.find({'_id':req.params.customerId}, //query parameter
     //    {
     //        //will only return 1st matching element of orders array

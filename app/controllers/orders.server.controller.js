@@ -1,5 +1,19 @@
 /**
  * Created by BruceWayne on 10/01/2015.
+ * Want to model
+ *
+ * 1. Create an Order [DONE]
+ * 2. Retrieve Specific Order for a given Customer [DONE]
+ * 3. Retrieve All Orders for a given Customer  [DONE]
+ *
+ * !!!! 4. Update Specific Order for a given Customer
+ *
+ * 5. Update All Orders for a given Customer [NICE TO HAVE]
+ * 6. Update All Orders for All Customers [NICE TO HAVE]
+ *
+ * !!! 7. Delete Specific Order for a given Customer
+ *
+ * 8. Delete All Orders for a given Customer.  [NICE TO HAVE]
  */
 'use strict';
 
@@ -104,7 +118,7 @@ exports.create = function(req, res) {
  * Show the current Customer
  */
 exports.read = function(req, res) {
-    console.log('Arived at the server..');
+    console.log('Arrived at the server..');
     console.log('req.params: ' + JSON.stringify(req.params));
     console.log('req.body: ' + JSON.stringify(req.body));
 
@@ -123,12 +137,12 @@ exports.read = function(req, res) {
 //    });
 //
 
-    Customer.find({'_id':req.params.customerId},
+    //find customer, project only matching order and then use populate to pull it back
+    Customer.find({'_id':req.params.customerId}, //query parameter
         {
-
-//                    $match:{'orders._id':req.params.orderId},
+            //will only return 1st matching element of orders array
             orders:{$elemMatch:{_id:req.params.orderId}}
-        })
+        }) // projection parameter
         //do we need orders/order.orderItems. We only use references from Item model so maybe just declare this in the populate mehtod.
             .populate('orders orders.orderItems orders.orderItems.item').exec(
 
@@ -140,23 +154,6 @@ exports.read = function(req, res) {
         });
 
 
-
-    //option 2
-////    Customer.aggregate({$match:{'_id':req.params.customerId, 'orders._id':req.params.orderId}},function(er, res){
-//    Customer.aggregate({$match:{'_id': ObjectId(req.params.customerId)}},function(er, res){
-////    Customer.aggregate({$match:{'_id': ObjectId(req.params.customerId), 'orders._id':ObjectId(req.params.orderId) }},function(er, res){
-//
-//                        console.log('RESULT: '+ JSON.stringify(res));
-//    });
-
-
-
-    //option 1
-    //Customer.find({'_id':req.params.customerId, 'orders._id':req.params.orderId}, function(err, order){
-    //    if(!order) throw (new Error('failed to load order'));
-    //    console.log('retrieved Order: ' + JSON.stringify(order));
-    //    res.jsonp(order);
-    //});
 };
 
 /**

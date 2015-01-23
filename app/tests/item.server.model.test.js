@@ -39,7 +39,10 @@ describe('Item Model Unit Tests:', function() {
 
 	describe('Method Save', function() {
 		it('should be able to save without problems', function(done) {
-			return item.save(function(err) {
+            item.name = 'lamp';
+            item.price = '14.50';
+
+            return item.save(function(err) {
 				should.not.exist(err);
 				done();
 			});

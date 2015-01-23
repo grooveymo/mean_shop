@@ -39,7 +39,15 @@ describe('Customer Model Unit Tests:', function() {
 
 	describe('Method Save', function() {
 		it('should be able to save without problems', function(done) {
-			return customer.save(function(err) {
+            customer.personalDetails.forename = 'firstname';
+            customer.personalDetails.surname = 'lastname';
+            customer.personalDetails.dob = '11/12/13';
+            customer.addressDetails.firstLine='firstLine';
+            customer.addressDetails.city='city';
+            customer.addressDetails.postCode='postcode';
+
+            return customer.save(function(err) {
+                console.log('[TEST] error saving Customer: ' + JSON.stringify(err));
 				should.not.exist(err);
 				done();
 			});

@@ -5,8 +5,55 @@
  * 1. Create an Order [DONE]
  * 2. Retrieve Specific Order for a given Customer [DONE]
  * 3. Retrieve All Orders for a given Customer  [DONE]
+ * 4. Update Specific Order for a given Customer [DONE]
+ *   - NOTE:
+ *    Ran into the 'depopulation' PROBLEM
+ *    when updating we use findOne to retrieve the Order and use 'populate' to perform
+ *    a 'join' and retrieve the associated items for each OrderItem. This will return
+ *    a fully populated Order instance. However once we've made the necessary updates to
+ *    this instance and we want to perform a mongo update, the update Order instance
+ *    has a fully copy of the item object in the OrderItem instance. However the schema
+ *    shows that the model expects just the item._id and not it's object equivalent.
+ *    This means we have to turn
  *
- * !!!! 4. Update Specific Order for a given Customer
+ *  item =        {
+          	    "_id" : ObjectId("54a2c4241571793c92c4ade7"),
+                "user" : ObjectId("54a2c0f38ef6ebd18da8a244"),
+                "price" : "3.45",
+                "created" : ISODate("2014-12-30T15:26:28.377Z"),
+                "description" : "mug",
+                "name" : "mug",
+                "__v" : 0
+            }
+
+    to
+
+    item = "54a2c4241571793c92c4ade7"
+
+ This can be achieved using a simple function (e.g. normalise() see below)
+ to transform from the Object to it's ._id
+
+ we can deploy this in 1 of 2 ways.
+
+ option 1 - use mongoose middleware : preSave().
+            However this limits you in the way you cna perform the update.
+            Middleware functions such as preSave() are not available
+            for update, findByIdandUpdate() etc since those operations
+            are performed in the database and not the application
+            and therefore offer no hooks.
+
+ option 2 - manually code in the function before you call
+            findByIdAndUpdate(), e.g.
+
+            order.orderItems = normalise(order.orderItems) // changes from item object into item ._id
+
+            Customer.findByIdAndUpdate(..., order);
+
+ I've adopted option 2 since i wanted to retain the use of mongooses' update methods.
+
+ further info here:
+ - https://github.com/LearnBoost/mongoose/issues/964
+ - https://github.com/LearnBoost/mongoose/issues/2509
  *
  * 5. Update All Orders for a given Customer [NICE TO HAVE]
  * 6. Update All Orders for All Customers [NICE TO HAVE]
@@ -14,6 +61,22 @@
  * !!! 7. Delete Specific Order for a given Customer
  *
  * 8. Delete All Orders for a given Customer.  [NICE TO HAVE]
+ *
+ *
+ *
+ * Lessons Learned
+ * 1. models that use populate - ensure that the UI has the fully populated model. Don't depopulate in the GUI.
+ *    instead do it on the server. This means that all the model information is available for CREATE/UPDATE
+ *    operations. I.e. we have a single currency (i.e. dto) that is used in the GUI. Only when we're
+ *    saving/updating do we replace an referenced instance (e.g. item) by it's id ._id.
+ *
+ * 2. middleware methods e.g. pre, post save() not available to methods such as 'update', 'findByIdAndUpdate'
+ *    So can't do depopulation() inside of the middleware but will have to explicitly call
+ *    inside any create/update methods.
+ *
+ *    Model.update, findByIdAndUpdate, findOneAndUpdate, findOneAndRemove, findByIdAndRemove are all commands executed directly in the database.
+ *
+ * 3.
  */
 'use strict';
 

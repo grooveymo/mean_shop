@@ -162,15 +162,11 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			}
 			//find element in array that needs to be removed
 			var orderItem = $scope.orderItems.filter(function(obj){
-//				return obj.id === selectedOrderItem.id;
 				return obj.item._id === selectedOrderItem.item._id;
 			});
 
-			//console.log(' selected item : ' + JSON.stringify(selectedOrderItem));
-			//console.log(' found item : ' + JSON.stringify(orderItem));
 			console.log('[X] selected item : ' + JSON.stringify(selectedOrderItem));
 			console.log('[Y] found item : ' + JSON.stringify(orderItem));
-//			console.log('[Y] found item : ' + JSON.stringify(orderItem));
 
 			if(orderItem[0]) {
 				console.log('found item will decrement quantity');

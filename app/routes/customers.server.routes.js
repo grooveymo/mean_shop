@@ -21,9 +21,9 @@ module.exports = function(app) {
 		.get(users.requiresLogin, orders.list);
 
 	app.route('/customers/:customerId/orders/:orderId')
-		.get(users.requiresLogin, orders.read);
-
-
+		.get(users.requiresLogin, orders.read)
+		.put(users.requiresLogin,orders.update);
+//PUT /customers/54b8ead1dd050becddbc6360/orders/54b8eae3dd050becddbc6361
 
 	//---------------- insert -----------
 

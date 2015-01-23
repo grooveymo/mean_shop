@@ -85,8 +85,27 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 	function($scope, $stateParams, $location, Authentication, Customers, Items, Orders ) {
 		$scope.authentication = Authentication;
 
-		$scope.orderItems = [];
 
+		console.log('[OrdersController : orderId = ' + $stateParams.orderId);
+		if($stateParams.orderId) { // this kicks in when we land on the edit-order.client.view.html page
+			var customerId = $stateParams.customerId;
+
+			//retrieve order items
+			var orderId = $stateParams.orderId;
+
+			console.log('OrderController#initialise....customer: ' + customerId + ' order: ' + orderId);
+
+			//generates following http request
+			//http://localhost:3000/customers/54b8ead1dd050becddbc6360/orders/54b8eae3dd050becddbc6361
+
+			$scope.order = Orders.get({customerId:customerId, orderId:orderId}, function(err){
+				console.log('retrived order: ' + JSON.stringify($scope.order));
+				$scope.orderItems = $scope.order.orderItems;
+			});
+
+		} else { // this kicks in when we land on any other page ie. create-order.client.view.html
+			$scope.orderItems = [];
+		}
 		/**
 		 * Find all items that can be purchased. display this in the view
 		 * and user can make selections using addORderItem/removeOrderItem
@@ -124,7 +143,9 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			var orderItem = $scope.orderItems.filter(function(obj){
 //				return obj.itemId === selectedItem._id;
 //				return obj._id === selectedItem._id;
-				return obj.item === selectedItem._id;
+//				return obj.item === selectedItem._id;
+				return obj.item._id === selectedItem._id;
+
 			});
 
 			console.log(' found item : ' + JSON.stringify(orderItem));
@@ -134,11 +155,13 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			} else {
 //				var newOrderItem = { itemId: this.item._id, name: this.item.name, price : this.item.price, quantity : 1 };
 //				var newOrderItem = { _id: this.item._id, price : this.item.price, quantity : 1 };
-				var newOrderItem = { item: this.item._id, price : this.item.price, quantity : 1 };
+//				var newOrderItem = { item: this.item._id, name: this.item.name, price : this.item.price, quantity : 1 };
+//				var newOrderItem = { item: this.item, name: this.item.name, price : this.item.price, quantity : 1 };
+				var newOrderItem = { item: this.item, quantity : 1 };
 				$scope.orderItems.push(newOrderItem);
 			}
 
-			console.log('selected Items : ' + JSON.stringify($scope.orderItems));
+			console.log('[CCC] selected Items : ' + JSON.stringify($scope.orderItems));
 		};
 
 
@@ -220,9 +243,78 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			//}
 		};
 
-		// Update existing Order
+		/**
+		 * Update existing Order
+		 * Note that this is called from the edit-order.view.html page where
+		 * the findOne has already been called and so $scope.order is correctly
+		 * populated with the updated order.
+		 */
 		$scope.update = function() {
-			console.log('TODO - Not Yet Implemented');
+
+			console.log('TODO - Not Yet Implemented - ' + JSON.stringify($scope.order) );
+
+			if($scope.order) {
+
+				var total = 0.0;
+				$scope.order.orderItems.forEach(function(entry){
+					total += (entry.item.price * entry.quantity);
+
+					//TODO : perform depopluation() at the server and not the client
+					//replace item definition with just the item._id. The schema defines item to be of type ObjectId
+					//however when we pulled the Customer object from the database, we used 'populate' to repopulate
+					//with the item object. So change item value to it's id.
+					console.log('[A] item: ' + entry.item);
+					console.log('[B] item: ' + entry.item._id);
+//					entry.item = entry.item._id;
+				});
+
+				console.log('about to persist updated Order');
+
+				$scope.order.total = total;
+				var persistedOrder = new Orders({
+					customerId: $stateParams.customerId, orderId : $stateParams.orderId, order : $scope.order
+				});
+
+				persistedOrder.$update(function(response) {
+					console.log('successfully persisted order..Now navigateing to /customers/' + response._id);
+
+					$location.path('customers/' + response._id);
+					// Clear form fields
+//					$scope.forename = '';
+				}, function(errorResponse) {
+					$scope.error = errorResponse.data.message;
+				});
+
+			}
+			/*
+			if($scope.orderItems.length > 0) {
+				//use $resource to create Order for Customer
+
+				var total = 0.0;
+				$scope.orderItems.forEach(function(entry){
+					total += (entry.price * entry.quantity);
+				});
+
+				//var order = {orderItems : $scope.orderItems, orderTotal : total};
+				//
+				//console.log('Will create an Order for : ' + JSON.stringify(order));
+				console.log('about to persist updated Order');
+
+				var persistedOrder = new Orders({
+					customerId: $stateParams.customerId, orderId : $stateParams.orderId, orderItems : $scope.orderItems, total : total
+				});
+
+				persistedOrder.$update(function(response) {
+					$location.path('customers/' + response._id);
+					console.log('successfully persisted order..');
+					// Clear form fields
+//					$scope.forename = '';
+				}, function(errorResponse) {
+					$scope.error = errorResponse.data.message;
+				});
+			}
+			*/
+
 			//var customer = $scope.customer ;
             //
 			//customer.$update(function() {

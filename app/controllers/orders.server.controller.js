@@ -27,6 +27,15 @@ var mongoose = require('mongoose'),
     _ = require('lodash'),
     ObjectId = require('mongoose').Types.ObjectId;
 
+var normalise = function(orderItemsArray){
+    return orderItemsArray.map(function(orderItem){
+        console.log('[Server]a normalised OrderItem: ' + JSON.stringify(orderItem));
+        orderItem.item = orderItem.item._id;
+        console.log('[Server]b normalised OrderItem: ' + JSON.stringify(orderItem));
+        return orderItem;
+    });
+};
+
 /**
  * Create a Order
  * Demo this in 2 ways
@@ -96,6 +105,14 @@ exports.create = function(req, res) {
     //extract the order object - used to update the Customer.orders array
     var order = req.body;
 
+    console.log('[Order] :' + JSON.stringify(order));
+
+    //var x = normalise(order.orderItems);
+    //console.log('[Server] Normalised Order  :' + JSON.stringify(x));
+    var orderItems = normalise(order.orderItems);
+    order.orderItems = orderItems;
+    console.log('[Server] Normalised Order  :' + JSON.stringify(order));
+
     /**
      * @params customerId - the customer id
      * @params order - use $push to insert a new order into the Customers array of orders
@@ -159,8 +176,104 @@ exports.read = function(req, res) {
 };
 
 /**
- * Update a Customer
+ * Update an Order
  */
+/*
+Original
+[Server] update body  :{
+                        "customerId":"54b8ead1dd050becddbc6360",
+                        "orderId":"54b8eae3dd050becddbc6361",
+                        "orderItems": [
+                                        {"item":{"_id":"54a2c62c02a7171e98115b33",
+                                                 "user":"54a2c0f38ef6ebd18da8a244",
+                                                 "price":9999,
+                                                 "__v":0,
+                                                 "created":"2014-12-30T15:35:08.222Z",
+                                                 "description":"Board game",
+                                                 "name":"Monopoly"},
+                                         "quantity":2,
+                                         "_id":"54b8eae3dd050becddbc6362"
+                                        }
+                                       ],
+                        "total":null}
+
+in db it looks like
+
+ "orders" : [
+              {
+                "total" : 49995,
+                "_id" : ObjectId("54b8eae3dd050becddbc6361"),
+                "status" : "NEW",
+                "dateSubmitted" : ISODate("2015-01-16T10:41:39.505Z"),
+                "orderItems" : [
+                                 {
+                                  "item" : ObjectId("54a2c62c02a7171e98115b33"),
+                                  "quantity" : 5,
+                                  "_id" : ObjectId("54b8eae3dd050becddbc6362")
+                                }
+                             ]
+               }
+            ]
+*/
+
+/* version 1 - note that this looks different from what's stored in db since we call populate when we pull the data to display in view
+hence why the 'item' entry looks dfferent from the one above.
+* [Server] update body  :
+* {"customerId":"54b8ead1dd050becddbc6360",
+* "orderId":"54b8eae3dd050becddbc6361",
+* "order":{
+*              "total":39996,
+*              "_id":"54b8eae3dd050becddbc6361",
+*              "status":"NEW",
+*              "dateSubmitted":"2015-01-16T10:41:39.505Z",
+*              "orderItems": [ {"item":{"_id":"54a2c62c02a7171e98115b33",
+*                                       "user":"54a2c0f38ef6ebd18da8a244",
+*                                       "price":9999,
+*                                       "__v":0,
+*                                       "created":"2014-12-30T15:35:08.222Z",
+*                                       "description":"Board game",
+*                                       "name":"Monopoly"},
+*                               "quantity":4,
+*                               "_id":"54b8eae3dd050becddbc6362"
+*                              }
+*                           ]
+*         }
+* }
+
+ * */
+
+exports.update = function(req, res) {
+//    console.log('[Server] update body  :' + JSON.stringify(req.body));
+
+    mongoose.set('debug', true);
+
+    var updatedOrder = req.body.order;
+
+    console.log('[Server] update Order  :' + JSON.stringify(updatedOrder));
+
+    var orderItems = normalise(updatedOrder.orderItems);
+    updatedOrder.orderItems = orderItems;
+    console.log('[Server] Normalised Order  :' + JSON.stringify(updatedOrder));
+
+
+//    Customer.update({_id:req.body.customerId,  orders :{$elemMatch:{_id:req.body.orderId}}},{'orders.$':1})
+    Customer.update({_id:req.body.customerId,  orders :{$elemMatch:{_id:req.body.orderId}}},{$set:{'orders.$':updatedOrder} },
+
+        function(err, customer){
+            if(err) console.log(err);
+            if(!customer) throw (new Error('failed to load order'));
+            console.log('[XXX] updated Order: ' + JSON.stringify(customer));
+//            res.jsonp(customer[0].orders[0]);
+//            res.jsonp(customer[0]);
+            res.jsonp({_id: req.body.customerId});
+
+        });
+
+
+};
+
+
+
 //exports.update = function(req, res) {
 //    var customer = req.customer ;
 //

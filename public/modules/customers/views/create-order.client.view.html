@@ -43,7 +43,7 @@
                 </th>
             </tr>
             <tr ng-repeat="orderItem in orderItems">
-                <td>{{orderItem.name}} </td>
+                <td>{{orderItem.item.name}} </td>
                 <td>{{orderItem.quantity}}</td>
                 <td><a href="" ng-click="removeOrderItem(orderItem)">remove</a></td>
             </tr>

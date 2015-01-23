@@ -370,6 +370,29 @@ exports.update = function(req, res) {
 //    });
 //};
 
+exports.delete = function(req, res) {
+
+    //HTTP DELETE expects ids to be passed in the request url (ie. request params)
+    //see https://github.com/angular/angular.js/issues/3207
+    console.log('[Server] delete body  :' + JSON.stringify(req.body));
+    console.log('[Server] delete params  :' + JSON.stringify(req.params));
+    var customerId = req.params.customerId;
+    var orderId = req.params.orderId;
+
+    mongoose.set('debug', true);
+
+    Customer.findByIdAndUpdate(customerId, {$pull : {orders : {_id:new ObjectId(orderId)} }}, function(err, updatedCustomer){
+
+        if(err) console.log('error deleteing alien: ' + JSON.stringify(err));
+        if (! updatedCustomer) throw (new Error('Failed to load Customer ' + customerId));
+
+        console.log('updated Customer orders : ' + JSON.stringify(updatedCustomer.orders));
+
+        res.jsonp(updatedCustomer);
+    });
+
+};
+
 /**
  * List of Orders for a Customer
  */

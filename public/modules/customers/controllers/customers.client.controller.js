@@ -228,7 +228,8 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		};
 
 		// Remove existing Order
-		$scope.remove = function( customer ) {
+		$scope.remove = function( orderId) {
+			console.log('about to delete - ' + orderId);
 			//if ( customer ) { customer.$remove();
             //
 			//	for (var i in $scope.customers ) {
@@ -241,6 +242,12 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			//		$location.path('customers');
 			//	});
 			//}
+				Orders.remove({customerId : $stateParams.customerId, orderId:orderId}, function(err) {
+					if(err) console.log('Error experienced deleting orderId: ' + JSON.stringify(err));
+//					$location.path('customers/' + response._id);
+//					$location.path('/customers/'+$stateParams.customerId+'/order/list');
+					$location.path('/customers/'+$stateParams.customerId);
+				});
 		};
 
 		/**
@@ -251,7 +258,7 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		 */
 		$scope.update = function() {
 
-			console.log('TODO - Not Yet Implemented - ' + JSON.stringify($scope.order) );
+			console.log('Updating order - ' + JSON.stringify($scope.order) );
 
 			if($scope.order) {
 

@@ -20,6 +20,7 @@
             Order: {{order}}
             -->
             <a data-ng-href="#!/customers/{{customerId}}/order/{{order._id}}/edit" class="btn btn-small btn-success">Edit</a>
+            <a ng-click="remove(order._id)" class="btn btn-small btn-danger">Remove</a>
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h4 class="">Order {{$index}} (total : £{{order.total}})</h4>

@@ -130,22 +130,12 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		 */
 		$scope.addOrderItem = function(selectedItem) {
 
-			//var jsObjects = [{a: 1, b: 2}, {a: 3, b: 4}, {a: 5, b: 6}, {a: 7, b: 8}];
-			//var result = jsObjects.filter(function( obj ) {
-			//	return obj.b === 6;
-			//});
-			//console.log('TEST: res = ' + JSON.stringify(result));
-
 			if(!Array.prototype.filter) {
 				console.log('WARNING:::: filter not supported');
 			}
 			//find element in array that matches the 'selectedItem'
 			var orderItem = $scope.orderItems.filter(function(obj){
-//				return obj.itemId === selectedItem._id;
-//				return obj._id === selectedItem._id;
-//				return obj.item === selectedItem._id;
 				return obj.item._id === selectedItem._id;
-
 			});
 
 			console.log(' found item : ' + JSON.stringify(orderItem));
@@ -153,10 +143,6 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 				console.log('found item will increment quantity');
 				orderItem[0].quantity += 1;
 			} else {
-//				var newOrderItem = { itemId: this.item._id, name: this.item.name, price : this.item.price, quantity : 1 };
-//				var newOrderItem = { _id: this.item._id, price : this.item.price, quantity : 1 };
-//				var newOrderItem = { item: this.item._id, name: this.item.name, price : this.item.price, quantity : 1 };
-//				var newOrderItem = { item: this.item, name: this.item.name, price : this.item.price, quantity : 1 };
 				var newOrderItem = { item: this.item, quantity : 1 };
 				$scope.orderItems.push(newOrderItem);
 			}
@@ -176,11 +162,16 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			}
 			//find element in array that needs to be removed
 			var orderItem = $scope.orderItems.filter(function(obj){
-				return obj.id === selectedOrderItem.id;
+//				return obj.id === selectedOrderItem.id;
+				return obj.item._id === selectedOrderItem.item._id;
 			});
 
-			console.log(' selected item : ' + JSON.stringify(selectedOrderItem));
-			console.log(' found item : ' + JSON.stringify(orderItem));
+			//console.log(' selected item : ' + JSON.stringify(selectedOrderItem));
+			//console.log(' found item : ' + JSON.stringify(orderItem));
+			console.log('[X] selected item : ' + JSON.stringify(selectedOrderItem));
+			console.log('[Y] found item : ' + JSON.stringify(orderItem));
+//			console.log('[Y] found item : ' + JSON.stringify(orderItem));
+
 			if(orderItem[0]) {
 				console.log('found item will decrement quantity');
 				orderItem[0].quantity -= 1;

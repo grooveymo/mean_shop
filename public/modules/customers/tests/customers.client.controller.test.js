@@ -51,6 +51,7 @@
 		}));
 
 		it('$scope.find() should create an array with at least one Customer object fetched from XHR', inject(function(Customers) {
+            console.log('running jasmine test for Customer: $scope.find()');
 			// Create sample Customer using the Customers service
 			var sampleCustomer = new Customers({
 				name: 'New Customer'
@@ -71,7 +72,9 @@
 		}));
 
 		it('$scope.findOne() should create an array with one Customer object fetched from XHR using a customerId URL parameter', inject(function(Customers) {
-			// Define a sample Customer object
+            console.log('running jasmine test for Customer: $scope.findOne()');
+
+            // Define a sample Customer object
 			var sampleCustomer = new Customers({
 				name: 'New Customer'
 			});
@@ -91,36 +94,93 @@
 		}));
 
 		it('$scope.create() with valid form data should send a POST request with the form input values and then locate to new object URL', inject(function(Customers) {
-			// Create a sample Customer object
+            console.log('running jasmine test for Customer: $scope.create()');
+
+            // Create a sample Customer object - this represents the JSON structure forming the body of the POST request we'll be constructing using the $resource service.
 			var sampleCustomerPostData = new Customers({
-				name: 'New Customer'
+                personalDetails : {
+                    forename : 'firstname',
+                    surname : 'lastname',
+                    dob : '11/12/13'
+                },
+                addressDetails : {
+                    firstLine : 'firstLine',
+                    city : 'city',
+                    postCode : 'postcode'
+                },
+                phoneDetails : {
+                    home : '2134567',
+                    office : '7654321',
+                    mobile: '079323423'
+                }
 			});
 
-			// Create a sample Customer response
+
+            // Create a sample Customer response - This represents the JSON structure we expect returned as a response from the POST request.
 			var sampleCustomerResponse = new Customers({
 				_id: '525cf20451979dea2c000001',
-				name: 'New Customer'
-			});
+//				name: 'New Customer'
+                personalDetails : {
+                    forename : 'firstname',
+                    surname : 'lastname',
+                    dob : '11/12/13'
+                },
+                addressDetails : {
+                    firstLine : 'firstLine',
+                    city : 'city',
+                    postCode : 'postcode'
+                },
+                phoneDetails : {
+                    home : '2134567',
+                    office : '7654321',
+                    mobile: '079323423'
+                }
 
-			// Fixture mock form input values
+            });
+
+
+            // Fixture mock form input values - here we set the values entered into a mock form. This will be used to construct the JSON structure forming the body of the POST request by the controller
 			scope.name = 'New Customer';
+            scope.forename = sampleCustomerPostData.personalDetails.forename;
+            scope.surname = sampleCustomerPostData.personalDetails.surname;
+            scope.dob = sampleCustomerPostData.personalDetails.dob;
+            scope.firstLine = sampleCustomerPostData.addressDetails.firstLine;
+            scope.city = sampleCustomerPostData.addressDetails.city;
+            scope.postCode = sampleCustomerPostData.addressDetails.postCode;
+            scope.home = sampleCustomerPostData.phoneDetails.home;
+            scope.office = sampleCustomerPostData.phoneDetails.office;
+            scope.mobile = sampleCustomerPostData.phoneDetails.mobile;
+
 
 			// Set POST response
 			$httpBackend.expectPOST('customers', sampleCustomerPostData).respond(sampleCustomerResponse);
 
-			// Run controller functionality
+            console.log('@@@@@@@ jasmine failing here : ' + JSON.stringify(sampleCustomerResponse));
+
+            // Run controller functionality
 			scope.create();
 			$httpBackend.flush();
 
 			// Test form inputs are reset
-			expect(scope.name).toEqual('');
+			expect(scope.forename).toEqual('');
+            expect(scope.surname).toEqual('');
+            expect(scope.dob).toEqual('');
+            expect(scope.firstLine).toEqual('');
+            expect(scope.city).toEqual('');
+            expect(scope.postCode).toEqual('');
+            expect(scope.home).toEqual('');
+            expect(scope.office).toEqual('');
+            expect(scope.mobile).toEqual('');
 
 			// Test URL redirection after the Customer was created
 			expect($location.path()).toBe('/customers/' + sampleCustomerResponse._id);
 		}));
 
 		it('$scope.update() should update a valid Customer', inject(function(Customers) {
-			// Define a sample Customer put data
+
+            console.log('running jasmine test for Customer: $scope.update()');
+
+            // Define a sample Customer put data
 			var sampleCustomerPutData = new Customers({
 				_id: '525cf20451979dea2c000001',
 				name: 'New Customer'
@@ -141,7 +201,10 @@
 		}));
 
 		it('$scope.remove() should send a DELETE request with a valid customerId and remove the Customer from the scope', inject(function(Customers) {
-			// Create new Customer object
+
+            console.log('running jasmine test for Customer: $scope.remove()');
+
+            // Create new Customer object
 			var sampleCustomer = new Customers({
 				_id: '525a8422f6d0f87f0e407a33'
 			});

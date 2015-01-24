@@ -7,10 +7,10 @@ angular.module('customers').controller('CustomersController', ['$scope', '$state
 
 		// Create new Customer
 		$scope.create = function() {
-			var personalDetails = {forename:''};
+//			var personalDetails = {forename:'', surname :'', dob: ''};
+
 			// Create new Customer object
 			var customer = new Customers ({
-//				name: this.name
 				personalDetails : {
 					forename : this.forename,
 					surname : this.surname,
@@ -34,6 +34,16 @@ angular.module('customers').controller('CustomersController', ['$scope', '$state
 
 				// Clear form fields
 				$scope.forename = '';
+                $scope.surname = '';
+                $scope.dob = '';
+                $scope.firstLine = '';
+                $scope.city = '';
+                $scope.postCode = '';
+                $scope.home = '';
+                $scope.office = '';
+                $scope.mobile = '';
+
+
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});

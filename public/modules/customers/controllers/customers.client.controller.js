@@ -99,25 +99,48 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		console.log('[OrdersController#init] orderId = ' + $stateParams.orderId);
         //The following code block is a cludge. The call to the restful service for orders will be duplicated when
         //when the findOne() [i.e. when editing order] is called.
-		if($stateParams.orderId) { // this kicks in when we land on the edit-order.client.view.html page
-			var customerId = $stateParams.customerId;
+        //if($stateParams.orderId) { // this kicks in when we land on the edit-order.client.view.html page
+        //var customerId = $stateParams.customerId;
+        //
+        ////retrieve order items
+        //var orderId = $stateParams.orderId;
+        //
+        //console.log('[OrderController#init]....customer: ' + customerId + ' order: ' + orderId);
+        //
+        ////generates following http request
+        ////http://localhost:3000/customers/54b8ead1dd050becddbc6360/orders/54b8eae3dd050becddbc6361
+        //
+        //$scope.order = Orders.get({customerId:customerId, orderId:orderId}, function(err){
+        //	console.log('[OrdersController#init] retrieved order: ' + JSON.stringify($scope.order));
+        //	$scope.orderItems = $scope.order.orderItems;
+        //});
+        //
+        //} else { // this kicks in when we land on any other page ie. create-order.client.view.html
+        //$scope.orderItems = [];
+        //}
 
-			//retrieve order items
-			var orderId = $stateParams.orderId;
+        /**
+         * Performs initialisation for edit-order page. This involves:
+         * 1. retrieving all items in db
+         * 2. retrieving specific order to be edited.
+         *
+         */
+        $scope.initForEditOrder = function() {
+            $scope.customerId = $stateParams.customerId;
+            $scope.orderId = $stateParams.orderId;
 
-			console.log('[OrderController#init]....customer: ' + customerId + ' order: ' + orderId);
+            //1. retrieve all items
+            $scope.items = Items.query(function(err, items){
 
-			//generates following http request
-			//http://localhost:3000/customers/54b8ead1dd050becddbc6360/orders/54b8eae3dd050becddbc6361
+                //2. retrieve specific customer order
+                $scope.order = Orders.get({customerId:$scope.customerId, orderId:$scope.orderId}, function(err){
+                    console.log('retrived order: ' + JSON.stringify($scope.order));
+                    $scope.orderItems = $scope.order.orderItems;
+                });
+            });
 
-			$scope.order = Orders.get({customerId:customerId, orderId:orderId}, function(err){
-				console.log('[OrdersController#init] retrieved order: ' + JSON.stringify($scope.order));
-				$scope.orderItems = $scope.order.orderItems;
-			});
+        };
 
-		} else { // this kicks in when we land on any other page ie. create-order.client.view.html
-			$scope.orderItems = [];
-		}
 		/**
 		 * Find all items that can be purchased. display this in the view
 		 * and user can make selections using addORderItem/removeOrderItem

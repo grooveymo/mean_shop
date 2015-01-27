@@ -340,7 +340,6 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
             $httpBackend.flush();
 
             // Test scope value
-            expect(scope.orderItems).toEqualData([]);
             expect(scope.orders).toEqualData(sampleOrders);
             expect(scope.customerId).toEqualData(customerId);
 
@@ -388,7 +387,37 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
 
         }));
 
-        it('findAllItems()', inject(function(Orders){
+        it('findAllItems()', inject(function(Customers, Items){
+
+            console.log('running jasmine test for Order: $scope.findAllItems()');
+
+            //create sample customerId
+            var customerId = '999cf20451979dea2c000001';
+            var sampleCustomer = {personalDetails:{forename:'fred', surname:'flintstone'}};
+
+            //populate $stateParams
+            $stateParams.customerId = customerId;
+
+            // Create sample Customer using the Customers service
+            var sampleItem = {_id:'525cf20451979dea2c000001', name:'Lamp', price:12.50};
+
+
+            // Create a sample Customers array that includes the new Customer
+            var sampleItems = [sampleItem];
+
+            //Set GET Response for Customer
+            $httpBackend.expectGET('customers/'+customerId).respond(sampleCustomer);
+
+            // Set GET response
+            $httpBackend.expectGET('items').respond(sampleItems);
+
+            // Run controller functionality
+            scope.findAllItems();
+            $httpBackend.flush();
+
+            // Test scope value
+            expect(scope.customer).toEqualData(sampleCustomer);
+            expect(scope.items).toEqualData(sampleItems);
 
         }));
 

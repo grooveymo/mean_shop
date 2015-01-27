@@ -421,6 +421,11 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
 
         }));
 
+        /**
+         * tests the addOrderItem() method
+         * adds 1 item
+         * adds the same item again
+         */
         it('addOrderItems()', inject(function(Orders){
 
             console.log('running jasmine test for Order: $scope.addOrderItem()');
@@ -432,21 +437,65 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
 
             scope.items = [sampleItem];
 
+            //add the item for the first time
             scope.addOrderItem(sampleItem);
 
             var expectedOrderItems = [{item:sampleItem, quantity:1}];
 
-            console.log('[DDT] l: '+ JSON.stringify(scope.orderItems));
+            console.log('[DDT] output1: '+ JSON.stringify(scope.orderItems));
             expect(scope.orderItems).toEqualData(expectedOrderItems);
+
+            //add the item again
+            scope.addOrderItem(sampleItem);
+
+            var expectedOrderItems = [{item:sampleItem, quantity:2}];
+
+            console.log('[DDT] output2: '+ JSON.stringify(scope.orderItems));
+            expect(scope.orderItems).toEqualData(expectedOrderItems);
+
+
+        }));
+
+        /**
+         * tests the removeOrderItem() method
+         * removes an item
+         * removes the item again - should complain that can't remove since count = 0
+         */
+        it('removeOrderItems()', inject(function(Orders){
+            console.log('running jasmine test for Order: $scope.addOrderItem()');
+
+            //create sample item
+            var sampleItem = {_id:'525cf20451979dea2c000001', name:'Lamp', price:12.50};
+
+            expect(scope.orderItems).toEqualData([]);
+
+            scope.items = [sampleItem];
+
+
+            //add the item for the first time
+            scope.addOrderItem(sampleItem);
+
+            var expectedOrderItems = {item:sampleItem, quantity:1};
+
+            console.log('[DDT] output1: '+ JSON.stringify(scope.orderItems));
+            expect(scope.orderItems).toEqualData([expectedOrderItems]);
+
+            //now remove the item
+            scope.removeOrderItem(expectedOrderItems);
+
+            console.log('[DDT] output2: '+ JSON.stringify(scope.orderItems));
+            expect(scope.orderItems).toEqualData([]);
+
+            //now remove the item from an empty array - check that we can't remove items from empty cart
+            expect(function(){scope.removeOrderItem(expectedOrderItems)}).toThrow(Error('Attempted to remove an item that is not in the basket'));
+            //still expect the cart to be empty
+            expect(scope.orderItems).toEqualData([]);
+
         }));
 
         /*
 
-         it('removeOrderItems()', inject(function(Orders){
-
-        }));
-
-        it('createOrder()', inject(function(Orders){
+         it('createOrder()', inject(function(Orders){
 
         }));
         it('updateOrder()', inject(function(Orders){

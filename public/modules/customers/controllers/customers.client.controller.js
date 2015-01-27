@@ -203,6 +203,7 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		 */
 		$scope.removeOrderItem = function(selectedOrderItem) {
 
+            console.log('[€removeOrderItem: ' + JSON.stringify(selectedOrderItem));
 			if(!Array.prototype.filter) {
 				console.log('WARNING:::: filter not supported');
 			}
@@ -223,6 +224,9 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 					$scope.orderItems.splice(index,1);
 				}
 			}
+            else {
+                throw Error('Attempted to remove an item that is not in the basket');
+            }
 			console.log('selected Items : ' + JSON.stringify($scope.orderItems));
 
 		};

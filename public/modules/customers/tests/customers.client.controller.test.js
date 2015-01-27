@@ -448,7 +448,7 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
             //add the item again
             scope.addOrderItem(sampleItem);
 
-            var expectedOrderItems = [{item:sampleItem, quantity:2}];
+            expectedOrderItems = [{item:sampleItem, quantity:2}];
 
             console.log('[DDT] output2: '+ JSON.stringify(scope.orderItems));
             expect(scope.orderItems).toEqualData(expectedOrderItems);
@@ -487,9 +487,55 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
             expect(scope.orderItems).toEqualData([]);
 
             //now remove the item from an empty array - check that we can't remove items from empty cart
-            expect(function(){scope.removeOrderItem(expectedOrderItems)}).toThrow(Error('Attempted to remove an item that is not in the basket'));
+            expect(function(){scope.removeOrderItem(expectedOrderItems);}).toThrow(Error('Attempted to remove an item that is not in the basket'));
             //still expect the cart to be empty
             expect(scope.orderItems).toEqualData([]);
+
+        }));
+
+        it('createOrder()', inject(function(Orders){
+
+            console.log('running jasmine test for Order: $scope.createdOrder()');
+
+            //create sample customerId
+            var customerId = '999cf20451979dea2c000001';
+
+            //create sample item
+            var sampleItem1 = {_id:'525cf20451979dea2c000001', name:'Lamp', price:10};
+            var sampleItem2 = {_id:'333cf20451979dea2c000001', name:'Trousers', price:20};
+
+            expect(scope.orderItems).toEqualData([]);
+
+            scope.items = [sampleItem1, sampleItem2];
+
+            //add the items - 2 of each
+            scope.addOrderItem(sampleItem1);
+            scope.addOrderItem(sampleItem1);
+            scope.addOrderItem(sampleItem2);
+            scope.addOrderItem(sampleItem2);
+
+            //work out what the order looks like & it's total
+            var expectedOrderItems = [{item:sampleItem1, quantity:2},{item:sampleItem2, quantity:2}];
+            var expectedTotal = (sampleItem1.price * 2) + (sampleItem2.price * 2);
+
+            //construct the expect post data & it's response
+            var sampleOrderPostData = {customerId: customerId, orderItems : expectedOrderItems, total:expectedTotal };
+            var sampleOrderResponse ={_id:'111cf20451979dea2c000001', orderItems: expectedOrderItems};
+
+            $httpBackend.expectPOST('customers/'+customerId+'/orders', sampleOrderPostData).respond(sampleOrderResponse);
+
+            //call the create() method
+            scope.create();
+            $httpBackend.flush();
+
+
+
+            console.log('[#create()] output1: '+ JSON.stringify(scope.orderItems));
+
+            expect(scope.orderItems).toEqualData(expectedOrderItems);
+            expect(scope.total).toEqual(expectedTotal);
+
+
 
         }));
 

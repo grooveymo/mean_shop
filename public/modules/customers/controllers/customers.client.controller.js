@@ -239,9 +239,10 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			if($scope.orderItems.length > 0) {
 				//use $resource to create Order for Customer
 
-				var total = 0.0;
+				$scope.total = 0.0;
 				$scope.orderItems.forEach(function(entry){
-					total += (entry.price * entry.quantity);
+					$scope.total += (entry.item.price * entry.quantity);
+                    console.log('[JAMMIN] name: ' + entry.item.name + ' price: ' + entry.item.price + ' quantity: ' + entry.quantity);
 				});
 
 				//var order = {orderItems : $scope.orderItems, orderTotal : total};
@@ -250,7 +251,7 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 				console.log('about to persist new Order');
 
 				var persistedOrder = new Orders({
-					customerId: $stateParams.customerId, orderItems : $scope.orderItems, total : total
+					customerId: $stateParams.customerId, orderItems : $scope.orderItems, total : $scope.total
 				});
 
 				persistedOrder.$save(function(response) {

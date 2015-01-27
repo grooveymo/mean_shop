@@ -20,7 +20,8 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
 		};
 
 		$scope.remove = function(article) {
-			console.log('@@@@@@ ARTICLE: ' + JSON.stringify(article));
+            console.log('@@@@@@ 1. ARTICLE: ' + JSON.stringify(article));
+            console.log('@@@@@@ 2. ARTICLE: ' + JSON.stringify($scope.article));
 			if (article) {
 				article.$remove();
 

@@ -421,12 +421,28 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
 
         }));
 
-        /*
         it('addOrderItems()', inject(function(Orders){
 
+            console.log('running jasmine test for Order: $scope.addOrderItem()');
+
+            //create sample item
+            var sampleItem = {_id:'525cf20451979dea2c000001', name:'Lamp', price:12.50};
+
+            expect(scope.orderItems).toEqualData([]);
+
+            scope.items = [sampleItem];
+
+            scope.addOrderItem(sampleItem);
+
+            var expectedOrderItems = [{item:sampleItem, quantity:1}];
+
+            console.log('[DDT] l: '+ JSON.stringify(scope.orderItems));
+            expect(scope.orderItems).toEqualData(expectedOrderItems);
         }));
 
-        it('removeOrderItems()', inject(function(Orders){
+        /*
+
+         it('removeOrderItems()', inject(function(Orders){
 
         }));
 

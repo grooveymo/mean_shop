@@ -95,6 +95,8 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 	function($scope, $stateParams, $location, Authentication, Customers, Items, Orders ) {
 		$scope.authentication = Authentication;
 
+        //used when creating an order
+        $scope.orderItems = [];
 
 		console.log('[OrdersController#init] orderId = ' + $stateParams.orderId);
         //The following code block is a cludge. The call to the restful service for orders will be duplicated when
@@ -173,13 +175,22 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 				return obj.item._id === selectedItem._id;
 			});
 
-			console.log(' found item : ' + JSON.stringify(orderItem));
+			console.log(' [DDT] found item : ' + JSON.stringify(orderItem));
 			if(orderItem[0]) {
 				console.log('found item will increment quantity');
 				orderItem[0].quantity += 1;
 			} else {
-				var newOrderItem = { item: this.item, quantity : 1 };
+                //Originally refered to selected item using this.item since this function fires
+                //when the addItem button is clicked next to an item. The view uses ng-repeat
+                //and iterates over all items. We can use this.item to refer to any element
+                // in the loop ng-repeat='item in items'.
+                // However the jasmine test is run outside of this context and so won't
+                //have a this.item defined. So have to switch to using the item instance passed
+                //in as an argument to this method.
+//				var newOrderItem = { item: this.item, quantity : 1 };
+                var newOrderItem = { item: selectedItem, quantity : 1 };
 				$scope.orderItems.push(newOrderItem);
+                console.log('[DDT] adding new orderItem: ' + JSON.stringify(newOrderItem));
 			}
 
 			console.log('[CCC] selected Items : ' + JSON.stringify($scope.orderItems));

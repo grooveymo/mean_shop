@@ -96,20 +96,22 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		$scope.authentication = Authentication;
 
 
-		console.log('[OrdersController : orderId = ' + $stateParams.orderId);
+		console.log('[OrdersController#init] orderId = ' + $stateParams.orderId);
+        //The following code block is a cludge. The call to the restful service for orders will be duplicated when
+        //when the findOne() [i.e. when editing order] is called.
 		if($stateParams.orderId) { // this kicks in when we land on the edit-order.client.view.html page
 			var customerId = $stateParams.customerId;
 
 			//retrieve order items
 			var orderId = $stateParams.orderId;
 
-			console.log('OrderController#initialise....customer: ' + customerId + ' order: ' + orderId);
+			console.log('[OrderController#init]....customer: ' + customerId + ' order: ' + orderId);
 
 			//generates following http request
 			//http://localhost:3000/customers/54b8ead1dd050becddbc6360/orders/54b8eae3dd050becddbc6361
 
 			$scope.order = Orders.get({customerId:customerId, orderId:orderId}, function(err){
-				console.log('retrived order: ' + JSON.stringify($scope.order));
+				console.log('[OrdersController#init] retrieved order: ' + JSON.stringify($scope.order));
 				$scope.orderItems = $scope.order.orderItems;
 			});
 
@@ -328,7 +330,7 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			//});
 		};
 
-		// Find a list of Orders
+		// Find ALL Orders for a given Customer
 		$scope.find = function() {
 
 			console.log('OrderController#find()....');
@@ -340,7 +342,8 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			//}, function(err){
 
 				//now query for orders
-				$scope.orders = Orders.query({customerId:$stateParams.customerId}, function(err, data){
+//				$scope.orders = Orders.query({customerId:$stateParams.customerId}, function(err, data){
+            $scope.orders = Orders.query({customerId:$scope.customerId}, function(err, data){
 					console.log('retrieved orders for customer: ' + $stateParams.customerId);
 					console.log('results: ' + JSON.stringify(data));
 				});
@@ -353,22 +356,21 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			//});
 		};
 
-		// Find existing Order
+		// Find SINGLE Order for a given customer
 		$scope.findOne = function() {
-			var customerId = $stateParams.customerId;
-			var orderId = $stateParams.orderId;
+            $scope.customerId = $stateParams.customerId;
+			$scope.orderId = $stateParams.orderId;
 
-			console.log('OrderController#findOne()....customer: ' + customerId + ' order: ' + orderId);
+			console.log('OrderController#findOne()....customer: ' + $scope.customerId + ' order: ' + $scope.orderId);
 
 			//generates following http request
 			//http://localhost:3000/customers/54b8ead1dd050becddbc6360/orders/54b8eae3dd050becddbc6361
 
-			$scope.order = Orders.get({customerId:customerId, orderId:orderId}, function(err){
+			$scope.order = Orders.get({customerId:$scope.customerId, orderId:$scope.orderId}, function(err){
 				console.log('retrived order: ' + JSON.stringify($scope.order));
+                $scope.orderItems = $scope.order.orderItems;
 			});
-			//$scope.customer = Customers.get({
-			//	customerId: $stateParams.customerId
-			//});
+
 		};
 	}
 ]);

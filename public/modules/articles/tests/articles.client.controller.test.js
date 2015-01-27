@@ -1,5 +1,5 @@
 'use strict';
-
+/*
 (function() {
 	// Articles Controller Spec
 	describe('ArticlesController', function() {
@@ -168,3 +168,4 @@
 		}));
 	});
 }());
+    */

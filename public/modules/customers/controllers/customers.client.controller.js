@@ -296,7 +296,7 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 		 */
 		$scope.update = function() {
 
-			console.log('Updating order - ' + JSON.stringify($scope.order) );
+			console.log('[$scope.update()] Updating order - ' + JSON.stringify($scope.order) );
 
 			if($scope.order) {
 
@@ -316,12 +316,12 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 				console.log('about to persist updated Order');
 
 				$scope.order.total = total;
-				var persistedOrder = new Orders({
+				$scope.persistedOrder = new Orders({
 					customerId: $stateParams.customerId, orderId : $stateParams.orderId, order : $scope.order
 				});
 
-				persistedOrder.$update(function(response) {
-					console.log('successfully persisted order..Now navigateing to /customers/' + response._id);
+				$scope.persistedOrder.$update(function(response) {
+					console.log('successfully updated order..Now navigateing to /customers/' + response._id);
 
 					$location.path('customers/' + response._id);
 					// Clear form fields
@@ -331,42 +331,6 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 				});
 
 			}
-			/*
-			if($scope.orderItems.length > 0) {
-				//use $resource to create Order for Customer
-
-				var total = 0.0;
-				$scope.orderItems.forEach(function(entry){
-					total += (entry.price * entry.quantity);
-				});
-
-				//var order = {orderItems : $scope.orderItems, orderTotal : total};
-				//
-				//console.log('Will create an Order for : ' + JSON.stringify(order));
-				console.log('about to persist updated Order');
-
-				var persistedOrder = new Orders({
-					customerId: $stateParams.customerId, orderId : $stateParams.orderId, orderItems : $scope.orderItems, total : total
-				});
-
-				persistedOrder.$update(function(response) {
-					$location.path('customers/' + response._id);
-					console.log('successfully persisted order..');
-					// Clear form fields
-//					$scope.forename = '';
-				}, function(errorResponse) {
-					$scope.error = errorResponse.data.message;
-				});
-			}
-			*/
-
-			//var customer = $scope.customer ;
-            //
-			//customer.$update(function() {
-			//	$location.path('customers/' + customer._id);
-			//}, function(errorResponse) {
-			//	$scope.error = errorResponse.data.message;
-			//});
 		};
 
 		// Find ALL Orders for a given Customer

@@ -539,14 +539,51 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
 
         }));
 
-        /*
-
-         it('createOrder()', inject(function(Orders){
-
-        }));
         it('updateOrder()', inject(function(Orders){
 
+
+            console.log('running jasmine test for Order: $scope.createdOrder()');
+
+            //create sample customerId
+            var customerId = '999cf20451979dea2c000001';
+            var orderId = '222cf20451979dea2c000001';
+
+            //create sample items
+            var sampleItem1 = {_id:'525cf20451979dea2c000001', name:'Lamp', price:10};
+            var sampleItem2 = {_id:'333cf20451979dea2c000001', name:'Trousers', price:20};
+
+            //work out what the order looks like & it's total
+            var expectedOrderItems = [{item:sampleItem1, quantity:2},{item:sampleItem2, quantity:2}];
+            var expectedTotal = (sampleItem1.price * 2) + (sampleItem2.price * 2);
+            var sampleOrder = {_id:orderId, total:expectedTotal, orderItems: expectedOrderItems};
+
+
+            //create the updated Order using the $resource
+            var sampleOrderPutData = new Orders({
+                customerId : customerId,
+                _id : orderId,
+                orderItems : expectedOrderItems
+            });
+
+            scope.order = sampleOrderPutData;
+
+            console.log('[DMC]2 order: ' + JSON.stringify(scope.order));
+
+            //            $httpBackend.expectPUT(/customers\/([0-9a-fA-F]{24})$/).respond();
+
+            $httpBackend.expectPUT('customers/'+customerId+'/orders/'+orderId).respond({_id:customerId});
+
+            // Run controller functionality
+            scope.update();
+            $httpBackend.flush();
+
+            // Test URL location to new object
+            expect($location.path()).toBe('/customers/' + customerId);
+
         }));
+
+        /*
+
         it('removeOrder()', inject(function(Orders){
 
         }));

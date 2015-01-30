@@ -282,8 +282,6 @@ angular.module('customers').controller('OrdersController', ['$scope', '$statePar
 			//}
 				Orders.remove({customerId : $stateParams.customerId, orderId:orderId}, function(err) {
 					if(err) console.log('Error experienced deleting orderId: ' + JSON.stringify(err));
-//					$location.path('customers/' + response._id);
-//					$location.path('/customers/'+$stateParams.customerId+'/order/list');
 					$location.path('/customers/'+$stateParams.customerId);
 				});
 		};

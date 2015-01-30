@@ -582,12 +582,36 @@ process.env.NODE_ENV appears to be undefined even if i set it in the .bashrc fil
 
         }));
 
-        /*
 
         it('removeOrder()', inject(function(Orders){
 
+            console.log('running jasmine test for Order: $scope.removeOrder()');
+
+            //create sample customerId
+            var customerId = '999cf20451979dea2c000001';
+            var orderId = '222cf20451979dea2c000001';
+
+            //set customer id on $stateParams
+            $stateParams.customerId = customerId;
+
+            $httpBackend.expectDELETE('customers/'+customerId+'/orders/'+orderId).respond();//expectPOST('customers/'+customerId+'/orders', sampleOrderPostData).respond(sampleOrderResponse);
+
+            //call the create() method
+            scope.remove(orderId);
+            $httpBackend.flush();
+
+
+            // Test URL location to new object
+            expect($location.path()).toBe('/customers/' + customerId);
+
+            console.log('[#create()] output1: '+ JSON.stringify(scope.orderItems));
+
+
+            //Now remove Order
+
         }));
-*/
+
+
         /*
                 it('$scope.findOne() should create an array with one Customer object fetched from XHR using a customerId URL parameter', inject(function(Customers) {
                     console.log('running jasmine test for Customer: $scope.findOne()');

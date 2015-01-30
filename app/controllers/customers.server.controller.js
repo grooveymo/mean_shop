@@ -13,7 +13,9 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 
-	console.log('[DDT] customer.server.controller > body: ' + JSON.stringify(req.body));
+    console.log('[Ctrl#create] req: ' + JSON.stringify(req));
+
+    console.log('[DDT] customer.server.controller > body: ' + JSON.stringify(req.body));
 	console.log('[DDT] customer.server.controller > personalDetails: ' + JSON.stringify(req.body.personalDetails));
 	console.log('[DDT] customer.server.controller > address: ' + JSON.stringify(req.body.addressDetails));
 	console.log('[DDT] customer.server.controller > phone: ' + JSON.stringify(req.body.phoneDetails));
@@ -83,12 +85,17 @@ exports.delete = function(req, res) {
 /**
  * List of Customers
  */
-exports.list = function(req, res) { Customer.find().sort('-created').populate('user', 'displayName').exec(function(err, customers) {
-		if (err) {
+exports.list = function(req, res) {
+
+    Customer.find().sort('-created').populate('user', 'displayName').exec(function(err, customers) {
+
+			if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
+            //console.log('[Ctrl#list] user: ' + customers[0].user);
+            console.log('[Ctrl#list] cusomters: ' + customers);
 			res.jsonp(customers);
 		}
 	});

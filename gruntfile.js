@@ -169,5 +169,6 @@ module.exports = function(grunt) {
 	// Test task.
     //DISABLE mocha model tests
 //	grunt.registerTask('test', ['env:test', 'mochaTest', 'karma:unit']);
-    grunt.registerTask('test', ['env:test', 'karma:unit']);
+//    grunt.registerTask('test', ['env:test', 'karma:unit']);
+	grunt.registerTask('test', ['env:test', 'mochaTest']);
 };

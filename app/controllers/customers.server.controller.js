@@ -95,7 +95,7 @@ exports.list = function(req, res) {
 			});
 		} else {
             //console.log('[Ctrl#list] user: ' + customers[0].user);
-            console.log('[Ctrl#list] cusomters: ' + customers);
+            //console.log('[Ctrl#list] cusomters: ' + customers);
 			res.jsonp(customers);
 		}
 	});

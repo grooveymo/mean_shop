@@ -37,7 +37,6 @@ describe('Customer Controller Unit Tests:', function() {
 
             if(err) console.log('[beforeEach] Error saving user: ' + JSON.stringify(err) );
 
-//            console.log('[beforeEach - saved user] user: ' + JSON.stringify(user));
             var personalDetails = {
                 forename : 'firstname',
                 surname : 'lastname',
@@ -59,11 +58,6 @@ describe('Customer Controller Unit Tests:', function() {
             return customer.save(function(err) {
                 if (err) console.log('[SuperTest] error saving Customer: ' + JSON.stringify(err));
                 should.not.exist(err);
-
-                //var persistedCustomer = Customer.findOne(err, function(result){
-                //    console.log('[YYY] results: ' + JSON.stringify(result));
-                //});
-
                 done();
             });
 
@@ -87,10 +81,6 @@ describe('Customer Controller Unit Tests:', function() {
             //    });
 
 
-            //var persistedCustomer = Customer.findOne(function(err,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          result){
-            //    console.log('[it1] customer.findOne(): ' + JSON.stringify(result));
-            //});
-
             // Create a SuperTest request
             request(app).get('/customers/')
                 .set('Accept', 'application/json')
@@ -105,7 +95,9 @@ describe('Customer Controller Unit Tests:', function() {
                     res.body[0].personalDetails.should.have.property('forename', customer.personalDetails.forename);
                     res.body[0].personalDetails.should.have.property('surname', customer.personalDetails.surname);
                     res.body[0].personalDetails.should.have.property('dob', customer.personalDetails.dob);
-
+                    res.body[0].addressDetails.should.have.property('firstLine', customer.addressDetails.firstLine);
+                    res.body[0].addressDetails.should.have.property('city', customer.addressDetails.city);
+                    res.body[0].addressDetails.should.have.property('postCode', customer.addressDetails.postCode);
                     done();
                 });
 

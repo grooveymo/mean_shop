@@ -73,15 +73,20 @@ exports.update = function(req, res) {
  * Delete an Customer
  */
 exports.delete = function(req, res) {
+
+    console.log('[delete] about to delete customer with _id: '+ req.customer._id);
 	var customer = req.customer ;
 
 	customer.remove(function(err) {
 		if (err) {
+            console.log('[delete] error attempting to delete customer : ' + err);
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
 			});
 		} else {
-			res.jsonp(customer);
+            console.log('[delete] succeeded in deleting customer : ' + customer._id);
+
+            res.jsonp(customer);
 		}
 	});
 };

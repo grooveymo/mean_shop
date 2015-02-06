@@ -4,9 +4,9 @@
 
  0. list Customers [GET] ** done ***
  1. create Customer [POST] ** done ***
- 2. get Single Customer [GET]
- 3. update Customer [PUT]
- 4. delete Customer [DELETE]
+ 2. get Single Customer [GET] ** done ***
+ 3. update Customer [PUT] ** done ***
+ 4. delete Customer [DELETE] ** done ***
 
 
  5. Create Order [POST]
@@ -309,7 +309,7 @@ describe('[Server] Customer Controller Unit Tests:', function() {
     describe('Testing the PUT methods', function() {
 
         //Create Customer record as User 'user'. Then attempt to update (as 'user')
-        xit('Should be able to update an existing Customer',function(done){
+        it('Should be able to update an existing Customer',function(done){
 
             var updatedForename = 'Updated first name';
             var updatedSurname = 'Updated last name';
@@ -384,8 +384,38 @@ describe('[Server] Customer Controller Unit Tests:', function() {
     //test the 'Customer' DELETE methods
     //-----------------------------------
     describe('Testing the DELETE methods', function() {
-        xit('Should be able to delete an existing Customer',function(done){
+        it('Should be able to delete an existing Customer as the Original Author',function(done){
+
+            loginUser(done, function(done){
+
+                //now attempt to create new Customer
+                var req = agent.delete('/customers/'+customer._id)
+                    .end(function(err, res){
+                        if(err) console.log('[error]: ' + JSON.stringify(err));
+                        res.should.have.property('status', 200);
+
+                        done();
+                    });
+            });
+
         });
+
+        it('Should NOT be able to delete an existing Customer as a different Author',function(done){
+
+            loginUser2(done, function(done){
+
+                //now attempt to create new Customer
+                var req = agent.delete('/customers/'+customer._id)
+                    .end(function(err, res){
+                        if(err) console.log('[error]: ' + JSON.stringify(err));
+                        res.should.have.property('status', 403);
+
+                        done();
+                    });
+            });
+
+        });
+
     });
 
 

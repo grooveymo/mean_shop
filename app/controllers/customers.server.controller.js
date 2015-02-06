@@ -13,30 +13,24 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 
-//    console.log('[Ctrl#create] req: ' + JSON.stringify(req));
-
-    console.log('[DDT] customer.server.controller > body: ' + JSON.stringify(req.body));
-	console.log('[DDT] customer.server.controller > personalDetails: ' + JSON.stringify(req.body.personalDetails));
-	console.log('[DDT] customer.server.controller > address: ' + JSON.stringify(req.body.addressDetails));
-    console.log('[DDT] customer.server.controller > phone: ' + JSON.stringify(req.body.phoneDetails));
-    console.log('[DDT] customer.server.controller > user: ' + JSON.stringify(req.body.user));
+    //console.log('[DDT] customer.server.controller > body: ' + JSON.stringify(req.body));
+    //console.log('[DDT] customer.server.controller > personalDetails: ' + JSON.stringify(req.body.personalDetails));
+    //console.log('[DDT] customer.server.controller > address: ' + JSON.stringify(req.body.addressDetails));
+    //console.log('[DDT] customer.server.controller > phone: ' + JSON.stringify(req.body.phoneDetails));
+    //console.log('[DDT] customer.server.controller > user: ' + JSON.stringify(req.body.user));
 
     //compare to Article code.s
     //var article = new Article(req.body);
     //article.user = req.user;
 
+    //Note that passport uses it's serializeUser() method [/app/config/passport.js] to inject in the user ._id as the param req.user
+    //This means that the new Customer() instance created below will have the ObjectId as it's user value therefore
+    //complying with the Customer Schema.
     var customer = new Customer(req.body);
-
-	console.log('[DDT] customer.server.controller > Customer: ' + JSON.stringify(customer));
-    //TODO: how come the cast from user obj to user._id works for the Article code and not here?
-    //TODO: Question - Am i creating the Customer object correctly???
-    //Answer: No I pass in the user object in the req.customer object
 	customer.user = req.user;
 
 	customer.save(function(err) {
 		if (err) {
-            //TODO : WHY do we get 'CastError: cast to objectId failed for value "[object Object]" at path "user"
-            // is the code expecting an _id rather than  user object ??
 
 			console.log('[ERROR] : ' + err);
 			return res.status(400).send({

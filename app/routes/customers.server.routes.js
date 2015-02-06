@@ -12,8 +12,7 @@ module.exports = function(app) {
         //Need to find out how to test using SuperTest when the user needs to be logged in
         // see 1. https://github.com/jaredhanson/passport/issues/86
         //     2. https://github.com/jaredhanson/passport/issues/132
-//		.post(users.requiresLogin, customers.create);
-        .post(customers.create);
+		.post(users.requiresLogin, customers.create);
 
 	app.route('/customers/:customerId')
 		.get(customers.read)

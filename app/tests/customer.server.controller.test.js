@@ -15,6 +15,26 @@
  8. update Order (PUT]
  9. delete Order [DELETE]
 
+
+ Use code below to overcome avoid-typeerror-converting-circular-structure-to-json error
+ //var cache = [];
+ //console.log('[GGGG]' +
+ //JSON.stringify(res, function(key, value) {
+                    //    if (typeof value === 'object' && value !== null) {
+                    //        if (cache.indexOf(value) !== -1) {
+                    //            // Circular reference found, discard key
+                    //            return;
+                    //        }
+                    //        // Store value in our collection
+                    //        cache.push(value);
+                    //    }
+                    //    return value;
+                    //})//;
+ //);
+ //
+ //cache = null; // Enable garbage collection
+
+
  */
 // Invoke 'strict' JavaScript mode
 'use strict';
@@ -22,6 +42,7 @@
 // Load the test dependencies
 var app = require('../../server'),
     request = require('supertest'),
+    agent = request.agent(app),
     should = require('should'),
     mongoose = require('mongoose'),
     User = mongoose.model('User'),
@@ -30,11 +51,35 @@ var app = require('../../server'),
 // Define global test variables
 var user, customer;
 
+var cookie;
+
 //set debug on mongoose
 //mongoose.set('debug',true);
 
 // Create an 'Articles' controller test suite
+
 describe('[Server] Customer Controller Unit Tests:', function() {
+
+    /**
+     * Performs login
+     * @param done mocha's done callback - required to terminate async calls. Don't want to invoke here
+     *             but simply to pass onto following request
+     * @param performRequest The request to perform, e.g. POST to create a new custoemr
+     */
+    function loginUser(done, performRequest) {
+
+        agent
+            .post('/auth/signin')
+            .send({ username: 'username', password: 'password' })
+            .end(onResponse);
+        function onResponse(err, res) {
+            console.log('[SIGNIN CB] : ' + JSON.stringify(res.status));
+            if(err) console.log('[ERROR-login] : ' + err);
+            agent.saveCookies(res);
+            console.log('[SIGNIN CB] : about to perform followon request.. ');
+            return performRequest(done);
+        }
+    };
 
     //Utility function to create Test Customer
     var createCustomer = function(prefix) {
@@ -54,8 +99,8 @@ describe('[Server] Customer Controller Unit Tests:', function() {
 
         var customerJSON = {
             'personalDetails' : personalDetails,
-            'addressDetails' : addressDetails,
-            'user' : user
+            'addressDetails' : addressDetails//,
+//            'user' : user._id
         };
 
         return customerJSON;
@@ -73,11 +118,13 @@ describe('[Server] Customer Controller Unit Tests:', function() {
             password: 'password'
         });
 
+
         // Save the new 'User' model instance
         user.save(function(err) {
 
             if(err) console.log('[beforeEach] Error saving user: ' + JSON.stringify(err) );
 
+//            console.log('[06.02.15] created new User: ' + JSON.stringify(user));
             var personalDetails = {
                 forename : 'firstname',
                 surname : 'lastname',
@@ -109,7 +156,7 @@ describe('[Server] Customer Controller Unit Tests:', function() {
     // Test the 'Customer' GET methods
     //-----------------------------------
     describe('Testing the GET methods', function() {
-        it('Should be able to get the list of Customers', function(done) {
+        xit('Should be able to get the list of Customers', function(done) {
             // Create a SuperTest request
             request(app).get('/customers/')
                 .set('Accept', 'application/json')
@@ -139,25 +186,11 @@ describe('[Server] Customer Controller Unit Tests:', function() {
     // Test the 'Customer' POST methods
     //-----------------------------------
     describe('Testing the POST methods', function() {
-        it('Should be able to create a NEW Customer',function(done){
+        xit('Should NOT be able to create a NEW Customer without logging in',function(done){
 
             var newCustomer = createCustomer('newCustomer_');
 
-            //TODO: understand why the following line where we set the user field to point to an actual user instance
-            //causes it to blow up with error message - CastError: Cast to ObjectId failed for value “[object Object]” at path “_id”
-            //Yet when we switch it to the user._id value it works. The Customer schema expects the user field to be an _id and not an object
-            //hence the cast exception. But what i don't understand is how it works when the app is deployed.
-            //Update - investigated Articles code and fnd that the population of the user field is done client side, e.g.
-            //exports.create = function(req, res) {
-            //    var article = new Article(req.body);
-            //    article.user = req.user;
-            //This yeilds the following
-                //[INVESTIGATE_001]a req.user : {"_id":"54cfc9b4fbb5305302d6bf34","displayName":"mo sayed","provider":"local","username":"masayed","__v":0,"created":"2015-02-02T19:02:12.215Z","roles":["user"],"email":"moo@cow.com","lastName":"sayed","firstName":"mo"}
-            //[INVESTIGATE_001]b article.user : "54cfc9b4fbb5305302d6bf34"
-            //Looks like the user field is cast from an object to an id by mongoose. Does this work for with populated code ?? Since this was the first instance we're creating the data in the db.
-            //Whereas the populate case is slightly different since we populate on the way out of the db and then 'depopulate' on the way back in.
-//            newCustomer.user = user;
-            newCustomer.user = user._id;
+            console.log('[06.02.14] newCustomer : ' + JSON.stringify(newCustomer));
 
             //Create a SuperTest request
             request(app).post('/customers/')
@@ -165,19 +198,60 @@ describe('[Server] Customer Controller Unit Tests:', function() {
                 .send(newCustomer)
                 .expect('Content-Type',/json/)
                 .end(function(err, res){
-//                    console.log('[NEW CUSTOMER] '+ JSON.stringify(res));
-                    console.log('[NEW CUSTOMER] '+ res);
-//                    res.body.should.have.property('_id');
+                    if(err) console.log('[error]: ' + JSON.stringify(err));
+                    res.body.should.have.property('message','User is not logged in');
                     done();
                 });
         });
+
+
+    //=============================================================
+    //SOLUTION : START
+    //=============================================================
+        describe('Should be able to create a NEW Customer if logged in',function(){
+
+            var newCustomer = createCustomer('newCustomer_');
+
+
+//            it('logon pleaseXXX', function(done){
+            it('logon pleaseXXX', function(done){
+                console.log('does user exists: '+ JSON.stringify(user));
+//                loginUser(done, function(done){
+                loginUser(done, function(done){
+
+                    console.log('Authenticated..... now doing post');
+                    //Create a SuperTest request
+                    var req = agent.post('/customers/')
+                        .set('Accept', 'application/json')
+                        .send(newCustomer)
+                        .expect('Content-Type',/json/)
+                        .end(function(err, res){
+                            req.expect(200);
+                            if(err) console.log('[error]: ' + JSON.stringify(err));
+                            res.body.should.not.have.property('message','User is not logged in');
+                            done();
+                        });
+
+
+//                    done();
+                });
+            });
+
+            //=============================================================
+            //SOLUTION : FINISH
+            //=============================================================
+
+
+
+        });
+
     });
 
     //-----------------------------------
     //test the 'Customer' PUT methods
     //-----------------------------------
     describe('Testing the PUT methods', function() {
-        it('Should be able to update an existing Customer',function(done){
+        xit('Should be able to update an existing Customer',function(done){
         });
     });
 
@@ -187,7 +261,7 @@ describe('[Server] Customer Controller Unit Tests:', function() {
     //test the 'Customer' DELETE methods
     //-----------------------------------
     describe('Testing the DELETE methods', function() {
-        it('Should be able to delete an existing Customer',function(done){
+        xit('Should be able to delete an existing Customer',function(done){
         });
     });
 

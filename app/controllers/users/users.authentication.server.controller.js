@@ -50,18 +50,30 @@ exports.signup = function(req, res) {
  * Signin after passport authentication
  */
 exports.signin = function(req, res, next) {
+    console.log('[SIGNIN]in: '+ req.isAuthenticated());
 	passport.authenticate('local', function(err, user, info) {
-		if (err || !user) {
+
+        console.log('[SIGNIN]a user attempting to login: ' + JSON.stringify(user));
+        console.log('[SIGNIN]a info: ' + JSON.stringify(info));
+        console.log('[SIGNIN]b req.isAuthenticated(): ' + req.isAuthenticated());
+
+        if (err || !user) {
 			res.status(400).send(info);
 		} else {
 			// Remove sensitive data before login
 			user.password = undefined;
 			user.salt = undefined;
 
+            //ref: http://stackoverflow.com/questions/24889267/req-session-passport-and-req-user-blank-and-req-isauthenticated-returns-false
+            //Then, Passport makes a call to req.login to store some info about the user in session
+            //This sets req.isAuthenticated == true
 			req.login(user, function(err) {
 				if (err) {
+                    console.log('[SIGNIN] err: ' + JSON.stringify(err));
 					res.status(400).send(err);
 				} else {
+                    console.log('[SIGNIN]c user managed to login ok: ' + JSON.stringify(user));
+                    console.log('[SIGNIN]d req.isAuthenticated(): ' + req.isAuthenticated());
 					res.jsonp(user);
 				}
 			});

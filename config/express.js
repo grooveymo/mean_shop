@@ -100,6 +100,7 @@ module.exports = function(db) {
 	app.use(passport.initialize());
 	app.use(passport.session());
 
+
 	// connect flash for flash messages
 	app.use(flash());
 

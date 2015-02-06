@@ -43,6 +43,7 @@
 	},
 	"devDependencies": {
 		"supertest": "~0.14.0",
+        "superagent":"~0.21.0",
 		"should": "~4.0.4",
 		"grunt-env": "~0.4.1",
 		"grunt-node-inspector": "~0.1.3",

@@ -46,7 +46,7 @@ exports.create = function(req, res) {
  * Show the current Customer
  */
 exports.read = function(req, res) {
-	console.log('OVER HERE !!!!!!!');
+//	console.log('OVER HERE !!!!!!!');
 	res.jsonp(req.customer);
 };
 
@@ -120,7 +120,9 @@ exports.customerByID = function(req, res, next, id) { Customer.findById(id).popu
  * Customer authorization middleware
  */
 exports.hasAuthorization = function(req, res, next) {
+    console.log('[hasAuthorization] customer.user.id: ' + req.customer.user.id + ' <===> req.user.id: ' + req.user.id);
 	if (req.customer.user.id !== req.user.id) {
+        console.log('[hasAuthorization] failed authorisation');
 		return res.status(403).send('User is not authorized');
 	}
 	next();

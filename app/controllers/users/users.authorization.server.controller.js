@@ -26,27 +26,8 @@ exports.userByID = function(req, res, next, id) {
  */
 exports.requiresLogin = function(req, res, next) {
 
-    console.log('[requiresLogin] req.isauthenticated: ' + req.isAuthenticated());
-    console.log('[requiresLogin] req has session cookie: ' + JSON.stringify(req.headers['cookie']));
-
-    //var cache = [];
-    //console.log('[TTTT]' +
-    //JSON.stringify(req, function(key, value) {
-    //    if (typeof value === 'object' && value !== null) {
-    //        if (cache.indexOf(value) !== -1) {
-    //            // Circular reference found, discard key
-    //            return;
-    //        }
-    //        // Store value in our collection
-    //        cache.push(value);
-    //    }
-    //    return value;
-    //})//;
-    //);
-    //
-    //cache = null; // Enable garbage collection
-
-
+    console.log('\t\t[requiresLogin] req.isAuthenticated: ' + req.isAuthenticated());
+    console.log('\t\t[requiresLogin] req has session cookie: ' + JSON.stringify(req.headers['cookie']));
 
     if (!req.isAuthenticated()) {
 		return res.status(401).send({

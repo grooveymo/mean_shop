@@ -50,12 +50,12 @@ exports.signup = function(req, res) {
  * Signin after passport authentication
  */
 exports.signin = function(req, res, next) {
-    console.log('[SIGNIN]in: '+ req.isAuthenticated());
+//    console.log('[SIGNIN]in: '+ req.isAuthenticated());
 	passport.authenticate('local', function(err, user, info) {
-
-        console.log('[SIGNIN]a user attempting to login: ' + JSON.stringify(user));
-        console.log('[SIGNIN]a info: ' + JSON.stringify(info));
-        console.log('[SIGNIN]b req.isAuthenticated(): ' + req.isAuthenticated());
+        //
+        //console.log('[SIGNIN]a user attempting to login: ' + JSON.stringify(user));
+        //console.log('[SIGNIN]a info: ' + JSON.stringify(info));
+        //console.log('[SIGNIN]b req.isAuthenticated(): ' + req.isAuthenticated());
 
         if (err || !user) {
 			res.status(400).send(info);
@@ -72,8 +72,9 @@ exports.signin = function(req, res, next) {
                     console.log('[SIGNIN] err: ' + JSON.stringify(err));
 					res.status(400).send(err);
 				} else {
-                    console.log('[SIGNIN]c user managed to login ok: ' + JSON.stringify(user));
-                    console.log('[SIGNIN]d req.isAuthenticated(): ' + req.isAuthenticated());
+                    //console.log('[SIGNIN]c user managed to login ok: ' + JSON.stringify(user));
+                    //console.log('[SIGNIN]d req.isAuthenticated(): ' + req.isAuthenticated());
+                    console.log('\t\t[signin] user has been authenticated successfully');
 					res.jsonp(user);
 				}
 			});

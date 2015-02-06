@@ -19,7 +19,7 @@ module.exports = function(app) {
 		.put(users.requiresLogin, customers.hasAuthorization, customers.update)
 		.delete(users.requiresLogin, customers.hasAuthorization, customers.delete);
 
-	//---------------- insert -----------
+	//---------------- start: Orders Routes -----------
 	app.route('/customers/:customerId/orders')
 		.post(users.requiresLogin, orders.create) //This url will be serviced by the method #create() inside the orders.server.controller
 		.get(users.requiresLogin, orders.list);
@@ -30,7 +30,7 @@ module.exports = function(app) {
 		.delete(users.requiresLogin, customers.hasAuthorization, orders.delete);
 //PUT /customers/54b8ead1dd050becddbc6360/orders/54b8eae3dd050becddbc6361
 
-	//---------------- insert -----------
+	//---------------- end: Orders Routes -----------
 
 	// Finish by binding the Customer middleware
 	app.param('customerId', customers.customerByID);

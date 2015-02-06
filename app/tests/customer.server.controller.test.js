@@ -212,11 +212,8 @@ describe('[Server] Customer Controller Unit Tests:', function() {
 
             var newCustomer = createCustomer('newCustomer_');
 
-
-//            it('logon pleaseXXX', function(done){
             it('logon pleaseXXX', function(done){
                 console.log('does user exists: '+ JSON.stringify(user));
-//                loginUser(done, function(done){
                 loginUser(done, function(done){
 
                     console.log('Authenticated..... now doing post');
@@ -229,11 +226,11 @@ describe('[Server] Customer Controller Unit Tests:', function() {
                             req.expect(200);
                             if(err) console.log('[error]: ' + JSON.stringify(err));
                             res.body.should.not.have.property('message','User is not logged in');
+                            res.body.should.have.property('_id');
+                            console.log('[SOL] : ' + JSON.stringify(res.body));
+
                             done();
                         });
-
-
-//                    done();
                 });
             });
 

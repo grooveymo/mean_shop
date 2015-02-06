@@ -4,6 +4,9 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
 	function($scope, $stateParams, $location, Authentication, Articles) {
 		$scope.authentication = Authentication;
 
+        //TODO: where does the user object get populated on the request??
+        //visit the server controller and dump to console the contents of req
+        //You'll find that the user object is populated.
 		$scope.create = function() {
 			var article = new Articles({
 				title: this.title,

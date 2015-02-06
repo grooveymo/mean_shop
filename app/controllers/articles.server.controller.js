@@ -12,10 +12,18 @@ var mongoose = require('mongoose'),
  * Create a article
  */
 exports.create = function(req, res) {
+
+    //TODO: how does req.user get populated??? Can't see it being set on the client side.
 	var article = new Article(req.body);
 	article.user = req.user;
 
-	article.save(function(err) {
+    console.log('[INVESTIGATE_001]a req.user : ' + JSON.stringify(req.user));
+    console.log('[INVESTIGATE_001]b article.user : ' + JSON.stringify(article.user));
+    //generates following
+    //[INVESTIGATE_001]a req.user : {"_id":"54cfc9b4fbb5305302d6bf34","displayName":"mo sayed","provider":"local","username":"masayed","__v":0,"created":"2015-02-02T19:02:12.215Z","roles":["user"],"email":"moo@cow.com","lastName":"sayed","firstName":"mo"}
+    //[INVESTIGATE_001]b article.user : "54cfc9b4fbb5305302d6bf34"
+
+    article.save(function(err) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

@@ -13,21 +13,31 @@ var mongoose = require('mongoose'),
  */
 exports.create = function(req, res) {
 
-    console.log('[Ctrl#create] req: ' + JSON.stringify(req));
+//    console.log('[Ctrl#create] req: ' + JSON.stringify(req));
 
     console.log('[DDT] customer.server.controller > body: ' + JSON.stringify(req.body));
 	console.log('[DDT] customer.server.controller > personalDetails: ' + JSON.stringify(req.body.personalDetails));
 	console.log('[DDT] customer.server.controller > address: ' + JSON.stringify(req.body.addressDetails));
-	console.log('[DDT] customer.server.controller > phone: ' + JSON.stringify(req.body.phoneDetails));
+    console.log('[DDT] customer.server.controller > phone: ' + JSON.stringify(req.body.phoneDetails));
+    console.log('[DDT] customer.server.controller > user: ' + JSON.stringify(req.body.user));
 
-	var customer = new Customer(req.body);
+    //compare to Article code.s
+    //var article = new Article(req.body);
+    //article.user = req.user;
+
+    var customer = new Customer(req.body);
 
 	console.log('[DDT] customer.server.controller > Customer: ' + JSON.stringify(customer));
-
+    //TODO: how come the cast from user obj to user._id works for the Article code and not here?
+    //TODO: Question - Am i creating the Customer object correctly???
+    //Answer: No I pass in the user object in the req.customer object
 	customer.user = req.user;
 
 	customer.save(function(err) {
 		if (err) {
+            //TODO : WHY do we get 'CastError: cast to objectId failed for value "[object Object]" at path "user"
+            // is the code expecting an _id rather than  user object ??
+
 			console.log('[ERROR] : ' + err);
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

@@ -64,6 +64,7 @@ var UserSchema = new Schema({
 	},
 	provider: {
 		type: String,
+        //TODO: following is commented out to enable SuperTest tests to work. Need to sort this out
 //		required: 'Provider is required'
 	},
 	providerData: {},

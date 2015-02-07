@@ -118,11 +118,11 @@ var normalise = function(orderItemsArray){
  */
 exports.create = function(req, res) {
 
-    console.log('[DDT] order.server.controller > body: ' + JSON.stringify(req.body));
+    console.log('[order.server.controller#create] > req.body: ' + JSON.stringify(req.body));
 
     //get customer id
     var customerId = req.body.customerId;
-    console.log('passed customer id : ' + customerId);
+    console.log('[order.server.controller#create] passed customer id : ' + customerId);
 
     //Option I:
     //step1 : retrieve Customer
@@ -168,7 +168,7 @@ exports.create = function(req, res) {
     //extract the order object - used to update the Customer.orders array
     var order = req.body;
 
-    console.log('[Order] :' + JSON.stringify(order));
+    console.log('[order.server.controller#create Order :' + JSON.stringify(order));
 
     //var x = normalise(order.orderItems);
     //console.log('[Server] Normalised Order  :' + JSON.stringify(x));

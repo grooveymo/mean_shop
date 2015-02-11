@@ -145,19 +145,16 @@ describe('[Server] Order Controller Unit Tests:', function() {
             user : user._id
         });
 
-//        console.log('creating 1st item');
 
         item1.save(function(err){
             if(err) console.log('[ERROR] saving item 1');
-//            task();
-            console.log('saved 1st item');
+//            console.log('saved 1st item');
 
         });
 
     };
     var createItem2 = function (task) {
 
- //       console.log('creating 2nd item');
         item2 = new Item({
             name : 'shirt',
             description: 'something to cover the chest',
@@ -167,8 +164,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
         item2.save(function(err){
             if(err) console.log('[ERROR] saving item 2');
-//            task(null,null);
-            console.log('saved 2nd item');
+//            console.log('saved 2nd item');
 
         });
 
@@ -187,8 +183,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
         item3.save(function(err){
             if(err) console.log('[ERROR] saving item 3');
-//            task(null,null);
-            console.log('saved 3rd item');
+//            console.log('saved 3rd item');
         });
 
 
@@ -196,7 +191,6 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
     var createOrderItem1 = function() {
 
-//        console.log('created Order Item 1');
         orderItem1 = new OrderItem({
             item : item1._id,
             quantity: 1
@@ -206,7 +200,6 @@ describe('[Server] Order Controller Unit Tests:', function() {
     };
     var createOrderItem2 = function() {
 
-  //      console.log('created Order Item 2');
         orderItem2 = new OrderItem({
             item : item2._id,
             quantity: 2
@@ -218,7 +211,6 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
     var createOrder = function(callback) {
 
-   //     console.log('Entering createOrder.....');
 
         createOrderItem1();
         createOrderItem2();
@@ -228,12 +220,12 @@ describe('[Server] Order Controller Unit Tests:', function() {
             total: (orderItem1.quantity * orderItem1.item.price) + (orderItem2.quantity * orderItem2.item.price)
         });
 
-        console.log('created Order ');
+//        console.log('created Order ');
 
         customer.orders = [order];
         customer.save(function(err) {
             if (err) console.log('[SuperTest] error saving Customer with ORDER: ' + JSON.stringify(err));
-            console.log('saved customer : ' + JSON.stringify(customer));
+//            console.log('saved customer : ' + JSON.stringify(customer));
         });
 
 //        return order;
@@ -249,17 +241,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
            createItem2(callback),
 //           createItem3(callback),
            createOrder(callback)
-            //function(callback){
-            //    console.log('Entering final async.....');
-            //    createOrder();
-            //
-            //    customer.order = order;
-            //    customer.save(function(err) {
-            //        if (err) console.log('[SuperTest] error saving Customer with ORDER: ' + JSON.stringify(err));
-            //
-            //    });
-            //
-            //}
+
 
         ], function(err, results){
 //            console.log('[generateOrder]....completed');
@@ -290,7 +272,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
             if(err) console.log('[beforeEach] Error saving user: ' + JSON.stringify(err) );
 
-            console.log('[user] _id : ' + user._id);
+//            console.log('[user] _id : ' + user._id);
 
 //            console.log('[06.02.15] created new User: ' + JSON.stringify(user));
             var personalDetails = {
@@ -314,7 +296,6 @@ describe('[Server] Order Controller Unit Tests:', function() {
             return customer.save(function(err) {
                 if (err) console.log('[SuperTest] error saving Customer: ' + JSON.stringify(err));
                 should.not.exist(err);
-
                 done();
             });
 
@@ -339,7 +320,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
         // Save the new 'User' model instance
         user2.save(function(err) {
             if(err) console.log('[beforeEach] Error saving user: ' + JSON.stringify(err) );
-            console.log('[user2] _id : ' + user2._id);
+//            console.log('[user2] _id : ' + user2._id);
             done();
         });
     });
@@ -349,7 +330,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
     });
 
 
-    describe('Test that order can be created', function(){
+    xdescribe('Test that order can be created', function(){
 
         it('should demo that order can be persisted', function(done){
 
@@ -368,12 +349,55 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
             });
 
+        });
+    });
 
+    describe('Test GET operations', function(){
+
+        it('Should NOT be able to get the list of Orders for a given Customer without logging in', function(done){
+            request(app).get('/customers/'+customer._id+'/orders')
+                .set('Accept','application/json')
+            .end(function(err, res){
+                if(err) console.log('[error]: ' + JSON.stringify(err));
+//                    console.log('[YYY] : '+ JSON.stringify(res.body));
+                    res.body.should.have.property('message','User is not logged in');
+                    res.status.should.equal(401);
+                done();
+            });
+        });
+
+
+        it('Should be able to get the list of Orders for a given Customer if logged in', function(done){
+
+            //authenticate first
+            loginUser(done, function(done){
+
+                //now attempt to create new Customer
+                var req = agent.get('/customers/'+customer._id+'/orders')
+                    .set('Accept','application/json')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function(err, res){
+                        //the following does not appear to do anything
+//                        req.expect(203);
+                        if(err) console.log('[error]: ' + JSON.stringify(err));
+                        res.status.should.equal(200);
+                        res.body.should.not.have.property('message','User is not logged in');
+                        res.body.should.be.an.Array.and.have.lengthOf(1);
+                        res.body[0].should.have.property('_id');
+                        res.body[0].should.have.property('orderItems');
+                        res.body[0].should.have.property('status', 'NEW');
+
+                        done();
+                    });
+            });
 
 
 
         });
+
     });
+
 
 
 /*
@@ -602,13 +626,22 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
     // Define a post-tests function
     afterEach(function(done) {
+//        console.log('Running afterEach');
         // Clean the database
         Order.remove(function(){
+//            console.log('[remove order]');
          OrderItem.remove(function(){
+//             console.log('[remove orderItem]');
           Item.remove(function(){
+//              console.log('[remove item]');
            Customer.remove(function() {
-            User.remove(function() {
-                done();
+//               console.log('[remove customer]');
+
+               User.remove(function() {
+ //                  console.log('[remove user]');
+ //                  console.log('afterEach completed');
+
+                   done();
             });
            });
           });
@@ -617,18 +650,5 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
     });
 
-    // Define a post-tests function
-    //afterEach(function(done) {
-    //    // Clean the database
-    //    Order.remove({
-    //
-    //        Customer.remove(function() {
-    //            User.remove(function() {
-    //                done();
-    //            });
-    //        });
-    //
-    //    });
-    //});
 
 });

@@ -404,7 +404,7 @@ exports.list = function(req, res) {
 
     var customerId = req.params.customerId;
 
-    console.log('[list] passed customer id : ' + customerId);
+//    console.log('[list] passed customer id : ' + customerId);
 
     //do we need orders/order.orderItems. We only use references from Item model so maybe just declare this in the populate mehtod.
     Customer.findById(customerId).populate('orders orders.orderItems orders.orderItems.item').exec(function(err, customer){
@@ -416,8 +416,8 @@ exports.list = function(req, res) {
         }
         else {
             var orders = customer.orders;
-            console.log('Customer has num orders: ' + orders.length);
-            console.log('Customer has following orders: ' + JSON.stringify(orders));
+            //console.log('Customer has num orders: ' + orders.length);
+            //console.log('Customer has following orders: ' + JSON.stringify(orders));
             res.jsonp(orders);
         }
 

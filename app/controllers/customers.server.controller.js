@@ -113,7 +113,9 @@ exports.list = function(req, res) {
 /**
  * Customer middleware
  */
-exports.customerByID = function(req, res, next, id) { Customer.findById(id).populate('user', 'displayName').exec(function(err, customer) {
+exports.customerByID = function(req, res, next, id) {
+//    console.log('[customerById] id: '+ id);
+    Customer.findById(id).populate('user', 'displayName').exec(function(err, customer) {
 		if (err) return next(err);
 		if (! customer) return next(new Error('Failed to load Customer ' + id));
 		req.customer = customer ;

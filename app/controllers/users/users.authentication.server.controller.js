@@ -74,7 +74,7 @@ exports.signin = function(req, res, next) {
 				} else {
                     //console.log('[SIGNIN]c user managed to login ok: ' + JSON.stringify(user));
                     //console.log('[SIGNIN]d req.isAuthenticated(): ' + req.isAuthenticated());
-                    console.log('\t\t[signin] user has been authenticated successfully');
+//                    console.log('\t\t[signin] user has been authenticated successfully');
 					res.jsonp(user);
 				}
 			});

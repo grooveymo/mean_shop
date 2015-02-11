@@ -16,7 +16,7 @@
  6. get All Orders [GET] ** done ***
  7. get Specific Order [GET] ** done ***
  8. update Order (PUT] ** done **
- 9. delete Order [DELETE]
+ 9. delete Order [DELETE] ** done ***
 
 
  Use code below to overcome avoid-typeerror-converting-circular-structure-to-json error

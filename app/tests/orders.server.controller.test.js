@@ -236,6 +236,31 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
     };
 
+    /**
+     * Create another order to use in the POST tests
+     * @returns {{orderItems: *[], total: number}}
+     */
+    var generateAnotherOrder = function() {
+
+        var anotherOrderItem1 = {
+            item : item1._id,
+            quantity: 10
+        };
+
+        var anotherOrderItem2 = {
+            item : item2._id,
+            quantity: 10
+        };
+
+        var anotherOrder = {
+            orderItems : [anotherOrderItem1, anotherOrderItem2],
+            total: (orderItem1.quantity * orderItem1.item.price) + (orderItem2.quantity * orderItem2.item.price)
+        };
+
+        //console.log('creating another ordeR: ' + JSON.stringify(anotherOrder));
+        return anotherOrder;
+    };
+
     var generateOrder = function(done) {
 
  //       console.log('[beforeEach#generateOrder]....');
@@ -456,7 +481,28 @@ describe('[Server] Order Controller Unit Tests:', function() {
      */
     describe('Test POST operations', function(){
 
-        xit('Should Not be able to create a new Order if  NOT logged in', function(done){
+        it('Should Not be able to create a new Order if  NOT logged in', function(done){
+
+            var anotherOrder = generateAnotherOrder();
+
+            //console.log('a.) customer.orders.length : ' + customer.orders.length);
+            //console.log('anotherOrder: ' + JSON.stringify(anotherOrder));
+            customer.orders.push(anotherOrder);
+
+            //console.log('b.) customer.orders.length : ' + customer.orders.length);
+            //console.log('pre >> ' + JSON.stringify(customer.orders) );
+            //Create a SuperTest request
+            request(app).post('/customers/'+customer._id+'/orders')
+                .set('Accept', 'application/json')
+                .send(customer)
+                .expect('Content-Type',/json/)
+                .end(function(err, res){
+                    if(err) console.log('[error]: ' + JSON.stringify(err));
+                    res.body.should.have.property('message','User is not logged in');
+                    done();
+                });
+
+
 
         });
 

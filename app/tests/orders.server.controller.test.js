@@ -37,6 +37,8 @@
  //
  //cache = null; // Enable garbage collection
 
+401 - unauthenticated
+403 - unAuthorised
 
  */
 // Invoke 'strict' JavaScript mode
@@ -243,12 +245,12 @@ describe('[Server] Order Controller Unit Tests:', function() {
     var generateAnotherOrder = function() {
 
         var anotherOrderItem1 = {
-            item : item1._id,
+            item : item1,
             quantity: 10
         };
 
         var anotherOrderItem2 = {
-            item : item2._id,
+            item : item2,
             quantity: 10
         };
 
@@ -483,26 +485,54 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
         it('Should Not be able to create a new Order if  NOT logged in', function(done){
 
+            //create another order
             var anotherOrder = generateAnotherOrder();
 
-            //console.log('a.) customer.orders.length : ' + customer.orders.length);
-            //console.log('anotherOrder: ' + JSON.stringify(anotherOrder));
-            customer.orders.push(anotherOrder);
+            //attach it to a customer
+            anotherOrder.customerId = customer._id;
 
-            //console.log('b.) customer.orders.length : ' + customer.orders.length);
-            //console.log('pre >> ' + JSON.stringify(customer.orders) );
-            //Create a SuperTest request
-            request(app).post('/customers/'+customer._id+'/orders')
+            //now attempt to create new Customer
+            var req = agent.post('/customers/' + customer._id + '/orders')
                 .set('Accept', 'application/json')
-                .send(customer)
+                .send(anotherOrder)
                 .expect('Content-Type',/json/)
                 .end(function(err, res){
                     if(err) console.log('[error]: ' + JSON.stringify(err));
                     res.body.should.have.property('message','User is not logged in');
+                    res.status.should.equal(401);
+
                     done();
                 });
+        });
+
+        it('Should be able to create a new Order if Logged in', function(done){
+
+            //create another order
+            var anotherOrder = generateAnotherOrder();
+
+            //attach it to a customer
+            anotherOrder.customerId = customer._id;
+
+            //authenticate first
+            loginUser(done, function(done) {
 
 
+                //now attempt to create new Order
+                var req = agent.post('/customers/' + customer._id + '/orders')
+                    .set('Accept', 'application/json')
+                    .send(anotherOrder)
+                    .expect('Content-Type',/json/)
+                    .end(function(err, res){
+                        req.expect(200);
+                        if (err) console.log('[error]: ' + JSON.stringify(err));
+                        console.log('[End] res: ' + JSON.stringify(res.body));
+                        res.body.should.not.have.property('message', 'User is not logged in');
+                        res.body.orders.should.be.an.Array.and.have.lengthOf(2);
+                        res.body.should.have.property('_id');
+                        done();
+                    });
+
+            });
 
         });
 

@@ -125,11 +125,12 @@ exports.customerByID = function(req, res, next, id) {
 
 /**
  * Customer authorization middleware
+ * TODO : why do we have 2 hasAuthorization() methods,1 here and 1 in users.authorization.server.controller.js
  */
 exports.hasAuthorization = function(req, res, next) {
-    console.log('[hasAuthorization] customer.user.id: ' + req.customer.user.id + ' <===> req.user.id: ' + req.user.id);
+//    console.log('[hasAuthorization] customer.user.id: ' + req.customer.user.id + ' <===> req.user.id: ' + req.user.id);
 	if (req.customer.user.id !== req.user.id) {
-        console.log('[hasAuthorization] failed authorisation');
+//        console.log('[hasAuthorization] failed authorisation');
 		return res.status(403).send('User is not authorized');
 	}
 	next();

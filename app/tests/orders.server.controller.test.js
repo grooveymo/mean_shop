@@ -15,7 +15,7 @@
  5. Create Order [POST] ** done ***
  6. get All Orders [GET] ** done ***
  7. get Specific Order [GET] ** done ***
- 8. update Order (PUT]
+ 8. update Order (PUT] ** done **
  9. delete Order [DELETE]
 
 
@@ -224,7 +224,9 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
 //        console.log('created Order ');
 
+        //Save order to customer
         customer.orders = [order];
+
         customer.save(function(err) {
             if (err) console.log('[SuperTest] error saving Customer with ORDER: ' + JSON.stringify(err));
             orderId = customer.orders[0]._id;
@@ -641,8 +643,72 @@ describe('[Server] Order Controller Unit Tests:', function() {
     });
 
 
+    /**
+     * Test DELETE operations
+     *
+     */
+
+    describe('Test DELETE operations', function(){
+
+        it('Should Not be able to delete Order if NOT logged on', function(done){
+
+//            loginUser(done, function(done){
+
+                //now attempt to delete an order for a given customer
+                var req = agent.delete('/customers/'+customer._id+'/orders/'+orderId)
+                    .end(function(err, res){
+                        if(err) console.log('[error]: ' + JSON.stringify(err));
+                        res.body.should.have.property('message','User is not logged in');
+                        res.status.should.equal(401);
+                        done();
+                    });
+//            });
 
 
+        });
+
+        it('Should Not be able to delete Order if logged on and NOT authorized', function(done){
+
+            loginUser2(done, function(done){
+
+                //now attempt to delete an order for a given customer
+                var req = agent.delete('/customers/'+customer._id+'/orders/'+orderId)
+                    .end(function(err, res){
+                        if(err) console.log('[error]: ' + JSON.stringify(err));
+                        res.status.should.equal(403);
+                        done();
+                    });
+            });
+
+        });
+
+        it('Should be able to delete Order if logged on and authorized', function(done){
+
+//            console.log('[DELETE]1 orders size = ' + customer.orders.length);
+            customer.orders.length.should.equal(1);
+
+            loginUser(done, function(done){
+
+                //now attempt to delete an order for a given customer
+                var req = agent.delete('/customers/'+customer._id+'/orders/'+orderId)
+                    .end(function(err, res){
+                        if(err) console.log('[error]: ' + JSON.stringify(err));
+                        res.body.should.not.have.property('message','User is not logged in');
+                        res.status.should.equal(200);
+
+                        Customer.findById(customer._id, function(err, cust){
+                            if(err) console.log('err: ' + JSON.stringify(err));
+//                            console.log('[DELETE]2 orders size = ' + cust.orders.length);
+                            cust.orders.length.should.equal(0);
+                            done();
+                        });
+                   });
+            });
+
+        });
+
+
+    });
 /*
             //-----------------------------------
     // Test the 'Customer' GET methods

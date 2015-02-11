@@ -26,8 +26,8 @@ exports.userByID = function(req, res, next, id) {
  */
 exports.requiresLogin = function(req, res, next) {
 
-    console.log('[exports.requiredLogin] req: ' + JSON.stringify(req.params));
-    console.log('\t\t[requiresLogin] req.isAuthenticated: ' + req.isAuthenticated());
+    //console.log('[exports.requiredLogin] req: ' + JSON.stringify(req.params));
+    //console.log('\t\t[requiresLogin] req.isAuthenticated: ' + req.isAuthenticated());
     //console.log('\t\t[requiresLogin] req has session cookie: ' + JSON.stringify(req.headers['cookie']));
 
     if (!req.isAuthenticated()) {

@@ -12,9 +12,9 @@
  4. delete Customer [DELETE] ** done ***
 
 
- 5. Create Order [POST]
- 6. get All Orders [GET]
- 7. get Specific Order [GET]
+ 5. Create Order [POST] ** done ***
+ 6. get All Orders [GET] ** done ***
+ 7. get Specific Order [GET] ** done ***
  8. update Order (PUT]
  9. delete Order [DELETE]
 
@@ -324,6 +324,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
                 'user' : user
             });
 
+            //customer is saved and returned with _id but is not populated
             return customer.save(function(err) {
                 if (err) console.log('[SuperTest] error saving Customer: ' + JSON.stringify(err));
                 should.not.exist(err);
@@ -525,7 +526,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
                     .end(function(err, res){
                         req.expect(200);
                         if (err) console.log('[error]: ' + JSON.stringify(err));
-                        console.log('[End] res: ' + JSON.stringify(res.body));
+//                        console.log('[End] res: ' + JSON.stringify(res.body));
                         res.body.should.not.have.property('message', 'User is not logged in');
                         res.body.orders.should.be.an.Array.and.have.lengthOf(2);
                         res.body.should.have.property('_id');
@@ -537,6 +538,108 @@ describe('[Server] Order Controller Unit Tests:', function() {
         });
 
     });
+
+
+    /**
+     * Test PUT Operations
+     */
+    describe('Test the PUT operations',function(){
+
+        var targetCustomer;
+
+        beforeEach(function(done){
+//            console.log('a1] job marley');
+            targetCustomer = Customer.findOne({_id:customer._id})
+                .populate('orders orders.orderItems orders.orderItems.item').exec(
+
+                function(err, customer){
+                    if(err) console.log(err);
+                    if(!customer) throw (new Error('failed to load order'));
+//                    console.log('a2] populated customer has : ' + JSON.stringify(customer));
+//                    console.log('a3] populated customer has : ' + JSON.stringify(customer.orders ));
+                    targetCustomer = customer;
+                    done();
+                });
+
+
+        });
+
+
+        it('Should not allow an Order to be updated if the User is NOT logged in', function(done){
+
+//            console.log('b1] populated customer has : ' + JSON.stringify(targetCustomer));
+
+            //update an existing Order
+            var existingOrder = targetCustomer.orders[0];
+
+//            console.log('Existing Order : '+ JSON.stringify(existingOrder) );
+            existingOrder.orderItems.forEach(function(orderItem){
+                orderItem.quantity = 10;
+            });
+//            console.log('Modified Order : '+ JSON.stringify(existingOrder) );
+
+            //construct the PUT request body
+            var requestBody = {
+                customerId: targetCustomer._id,
+                orderId : existingOrder._id,
+                order : existingOrder
+            };
+
+
+            ////now attempt to update an existing order
+            var req = agent.put('/customers/' + targetCustomer._id + '/orders/'+existingOrder._id)
+                .set('Content-Type','application/json')
+                .send(requestBody)
+                .end(function(err, res){
+                    if(err) console.log('[error]: ' + JSON.stringify(err));
+                    res.body.should.have.property('message','User is not logged in');
+                    res.status.should.equal(401);
+
+                    done();
+                });
+            //
+
+        }); //it
+
+        it('Should allow an Order to be updated if the User IS logged in', function(done){
+
+            //update an existing Order
+            var existingOrder = targetCustomer.orders[0];
+
+//            console.log('a] Existing Order : '+ JSON.stringify(existingOrder) );
+            existingOrder.orderItems.forEach(function(orderItem){
+                orderItem.quantity = 10;
+            });
+//            console.log('a] Modified Order : '+ JSON.stringify(existingOrder) );
+
+            //construct the PUT request body
+            var requestBody = {
+                customerId: targetCustomer._id,
+                orderId : existingOrder._id,
+                order : existingOrder
+            };
+
+            //authenticate first
+            loginUser(done, function(done) {
+                ////now attempt to update an existing order
+                var req = agent.put('/customers/' + targetCustomer._id + '/orders/'+existingOrder._id)
+                    .set('Content-Type','application/json')
+                    .send(requestBody)
+                    .end(function(err, res){
+                        if(err) console.log('[error]: ' + JSON.stringify(err));
+                        res.body.should.not.have.property('message','User is not logged in');
+                        res.status.should.equal(200);
+                        res.body._id.should.equal(targetCustomer._id.toString());
+
+                        done();
+                    });
+
+            });
+
+        }); //it
+
+    });
+
 
 
 

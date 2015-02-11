@@ -92,9 +92,9 @@ var mongoose = require('mongoose'),
 
 var normalise = function(orderItemsArray){
     return orderItemsArray.map(function(orderItem){
-        console.log('[Server]a normalised OrderItem: ' + JSON.stringify(orderItem));
+//        console.log('[Server]a normalised OrderItem: ' + JSON.stringify(orderItem));
         orderItem.item = orderItem.item._id;
-        console.log('[Server]b normalised OrderItem: ' + JSON.stringify(orderItem));
+//        console.log('[Server]b normalised OrderItem: ' + JSON.stringify(orderItem));
         return orderItem;
     });
 };
@@ -118,11 +118,11 @@ var normalise = function(orderItemsArray){
  */
 exports.create = function(req, res) {
 
-    console.log('[order.server.controller#create] > req.body: ' + JSON.stringify(req.body));
+//    console.log('[order.server.controller#create] > req.body: ' + JSON.stringify(req.body));
 
     //get customer id
     var customerId = req.body.customerId;
-    console.log('[order.server.controller#create] passed customer id : ' + customerId);
+//    console.log('[order.server.controller#create] passed customer id : ' + customerId);
 
     //Option I:
     //step1 : retrieve Customer
@@ -168,13 +168,13 @@ exports.create = function(req, res) {
     //extract the order object - used to update the Customer.orders array
     var order = req.body;
 
-    console.log('[order.server.controller#create Order :' + JSON.stringify(order));
+//    console.log('[order.server.controller#create Order :' + JSON.stringify(order));
 
     //var x = normalise(order.orderItems);
     //console.log('[Server] Normalised Order  :' + JSON.stringify(x));
     var orderItems = normalise(order.orderItems);
     order.orderItems = orderItems;
-    console.log('[Server] Normalised Order  :' + JSON.stringify(order));
+//    console.log('[Server] Normalised Order  :' + JSON.stringify(order));
 
     /**
      * @params customerId - the customer id
@@ -186,7 +186,7 @@ exports.create = function(req, res) {
 
         if (! updatedCustomer) throw (new Error('Failed to load Customer ' + customerId));
 
-        console.log('updated Customer : ' + JSON.stringify(updatedCustomer));
+//        console.log('updated Customer : ' + JSON.stringify(updatedCustomer));
 
         res.jsonp(updatedCustomer);
     });
@@ -308,15 +308,16 @@ hence why the 'item' entry looks dfferent from the one above.
 exports.update = function(req, res) {
 //    console.log('[Server] update body  :' + JSON.stringify(req.body));
 
-    mongoose.set('debug', true);
+    //Enable to get debug logs for mongoose
+//    mongoose.set('debug', true);
 
     var updatedOrder = req.body.order;
 
-    console.log('[Server] update Order  :' + JSON.stringify(updatedOrder));
+//    console.log('[Server] update Order  :' + JSON.stringify(updatedOrder));
 
     var orderItems = normalise(updatedOrder.orderItems);
     updatedOrder.orderItems = orderItems;
-    console.log('[Server] Normalised Order  :' + JSON.stringify(updatedOrder));
+//    console.log('[Server] Normalised Order  :' + JSON.stringify(updatedOrder));
 
 
 //    Customer.update({_id:req.body.customerId,  orders :{$elemMatch:{_id:req.body.orderId}}},{'orders.$':1})
@@ -325,7 +326,7 @@ exports.update = function(req, res) {
         function(err, customer){
             if(err) console.log(err);
             if(!customer) throw (new Error('failed to load order'));
-            console.log('[exports.update] updated Order: ' + JSON.stringify(customer));
+//            console.log('[exports.update] updated Order: ' + JSON.stringify(customer));
 //            res.jsonp(customer[0].orders[0]);
 //            res.jsonp(customer[0]);
             res.jsonp({_id: req.body.customerId});

@@ -10,7 +10,7 @@
 
 
  5. Create Order [POST]
- 6. get All Orders [GET]
+ 6. get All Orders [GET] ** done ***
  7. get Specific Order [GET]
  8. update Order (PUT]
  9. delete Order [DELETE]

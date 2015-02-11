@@ -64,7 +64,7 @@ var app = require('../../server'),
 
 
 // Define global test variables
-var user, customer, user2, item1, item2, item3, orderItem1, orderItem2, order;
+var user, customer, user2, item1, item2, item3, orderItem1, orderItem2, order, orderId;
 
 //var cookie;
 
@@ -148,7 +148,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
         item1.save(function(err){
             if(err) console.log('[ERROR] saving item 1');
-//            console.log('saved 1st item');
+//            console.log('[beforeEach]1 saved 1st item');
 
         });
 
@@ -164,7 +164,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
         item2.save(function(err){
             if(err) console.log('[ERROR] saving item 2');
-//            console.log('saved 2nd item');
+//            console.log('[beforeEach]2 saved 2nd item');
 
         });
 
@@ -209,7 +209,7 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
     };
 
-    var createOrder = function(callback) {
+    var createOrder = function(done) {
 
 
         createOrderItem1();
@@ -225,7 +225,11 @@ describe('[Server] Order Controller Unit Tests:', function() {
         customer.orders = [order];
         customer.save(function(err) {
             if (err) console.log('[SuperTest] error saving Customer with ORDER: ' + JSON.stringify(err));
-//            console.log('saved customer : ' + JSON.stringify(customer));
+            orderId = customer.orders[0]._id;
+//            console.log('[beforeEach]3 Updated customer : ' + customer._id + ' with order: ' + JSON.stringify(customer.orders[0]._id));
+//            console.log('Updated customer : ' + customer._id + ' with order: ' + JSON.stringify(customer.orders[0]));
+
+            done();
         });
 
 //        return order;
@@ -234,13 +238,13 @@ describe('[Server] Order Controller Unit Tests:', function() {
 
     var generateOrder = function(done) {
 
-//        console.log('[generateOrder]....');
+ //       console.log('[beforeEach#generateOrder]....');
         var callback = null;
-        async.each([
-           createItem1(callback),
-           createItem2(callback),
+        async.series([
+           createItem1(done),
+           createItem2(done),
 //           createItem3(callback),
-           createOrder(callback)
+           createOrder(done)
 
 
         ], function(err, results){
@@ -359,7 +363,6 @@ describe('[Server] Order Controller Unit Tests:', function() {
                 .set('Accept','application/json')
             .end(function(err, res){
                 if(err) console.log('[error]: ' + JSON.stringify(err));
-//                    console.log('[YYY] : '+ JSON.stringify(res.body));
                     res.body.should.have.property('message','User is not logged in');
                     res.status.should.equal(401);
                 done();
@@ -392,7 +395,68 @@ describe('[Server] Order Controller Unit Tests:', function() {
                     });
             });
 
+        });
 
+
+        it('Should NOT be able to get the Specific Order for a given Customer without logging in', function(done){
+//            console.log('testing url: '+ '/customers/'+customer._id+'/orders/'+orderId);
+            request(app).get('/customers/'+customer._id+'/orders/'+orderId)
+                .set('Accept','application/json')
+                .end(function(err, res){
+                    if(err) console.log('[error]: ' + JSON.stringify(err));
+                    res.body.should.have.property('message','User is not logged in');
+                    res.status.should.equal(401);
+                    done();
+                });
+        });
+
+
+        it('Should be able to get the Specific Order for a given Customer after logging in', function(done){
+//            console.log('1. testing url: '+ '/customers/'+customer._id+'/orders/'+orderId);
+
+
+            //authenticate first
+            loginUser(done, function(done){
+
+                //now attempt to create new Customer
+                var req = agent.get('/customers/'+customer._id+'/orders/'+orderId)
+                    .set('Accept','application/json')
+                    .expect('Content-Type', /json/)
+                    .expect(200)
+                    .end(function(err, res){
+                        //the following does not appear to do anything
+//                        req.expect(203);
+                        if(err) console.log('[error]: ' + JSON.stringify(err));
+                        res.status.should.equal(200);
+                        res.body.should.not.have.property('message','User is not logged in');
+//                        res.body.should.not.be.an.Array;
+
+//                        console.log('[res] ' + JSON.stringify(res.body));
+
+                        var actualOrderId = res.body._id;
+//                        console.log('[expected] ' + JSON.stringify(orderId));
+//                        console.log('[result] ' + JSON.stringify(actualOrderId));
+
+                        res.body.should.have.property('_id');
+                        //NOTE: need to cast orderId as a string for equality test to pass
+                        res.body.should.have.property('_id',orderId.toString());
+                        res.body.should.have.property('orderItems');
+                        res.body.should.have.property('status', 'NEW');
+
+                        done();
+                    });
+            });
+
+        });
+
+    });
+
+    /**
+     * Test POST operations for OrderController
+     */
+    describe('Test POST operations', function(){
+
+        xit('Should Not be able to create a new Order if  NOT logged in', function(done){
 
         });
 

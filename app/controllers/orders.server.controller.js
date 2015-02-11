@@ -198,9 +198,9 @@ exports.create = function(req, res) {
  * Show the current Customer
  */
 exports.read = function(req, res) {
-    console.log('Arrived at the server..');
-    console.log('req.params: ' + JSON.stringify(req.params));
-    console.log('req.body: ' + JSON.stringify(req.body));
+    //console.log('Arrived at the server..');
+    //console.log('req.params: ' + JSON.stringify(req.params));
+    //console.log('req.body: ' + JSON.stringify(req.body));
 
     //option 2- find Order by Combination of Customer and Order id and then use projection to only return required Order
     //This uses the $ positional operator and will return the Customer object (minimally populated?) with only the
@@ -212,7 +212,7 @@ exports.read = function(req, res) {
         function(err, customer){
             if(err) console.log(err);
             if(!customer) throw (new Error('failed to load order'));
-            console.log('[XXX] retrieved Order: ' + JSON.stringify(customer));
+//            console.log('[exports.read()] retrieved Order: ' + JSON.stringify(customer));
             res.jsonp(customer[0].orders[0]);
         });
 
@@ -325,7 +325,7 @@ exports.update = function(req, res) {
         function(err, customer){
             if(err) console.log(err);
             if(!customer) throw (new Error('failed to load order'));
-            console.log('[XXX] updated Order: ' + JSON.stringify(customer));
+            console.log('[exports.update] updated Order: ' + JSON.stringify(customer));
 //            res.jsonp(customer[0].orders[0]);
 //            res.jsonp(customer[0]);
             res.jsonp({_id: req.body.customerId});

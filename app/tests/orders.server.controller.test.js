@@ -85,10 +85,6 @@ describe('[Server] Order Controller Unit Tests:', function() {
      */
     function loginUser(done, performRequest) {
 
-        agent
-            .post('/auth/signin')
-            .send({ username: 'username', password: 'password' })
-            .end(onResponse);
         function onResponse(err, res) {
 //            console.log('[SIGNIN CB] : ' + JSON.stringify(res.status));
             if(err) console.log('[ERROR-login] : ' + err);
@@ -96,21 +92,27 @@ describe('[Server] Order Controller Unit Tests:', function() {
 //            console.log('[SIGNIN CB] : about to perform follow on request.. ');
             return performRequest(done);
         }
+
+        agent
+            .post('/auth/signin')
+            .send({ username: 'username', password: 'password' })
+            .end(onResponse);
     }
 
     function loginUser2(done, performRequest) {
+
+        function onResponse(err, res) {
+//            console.log('[SIGNIN CB] : ' + JSON.stringify(res.status));
+            if(err) console.log('[ERROR-login] : ' + err);
+            //        agent.saveCookies(res);
+//            console.log('[SIGNIN CB] : about to perform follow on request.. ');
+            return performRequest(done);
+        }
 
         agent
             .post('/auth/signin')
             .send({ username: 'username2', password: 'password2' })
             .end(onResponse);
-        function onResponse(err, res) {
-//            console.log('[SIGNIN CB] : ' + JSON.stringify(res.status));
-            if(err) console.log('[ERROR-login] : ' + err);
-            //        agent.saveCookies(res);
-//            console.log('[SIGNIN CB] : about to perform follow on request.. ');
-            return performRequest(done);
-        }
     }
 
     //Utility function to create Test Customer
@@ -364,14 +366,14 @@ describe('[Server] Order Controller Unit Tests:', function() {
     });
 
 
-    xdescribe('Test that order can be created', function(){
+    describe('Test that order can be created', function(){
 
         it('should demo that order can be persisted', function(done){
 
             Customer.findById(customer._id).populate('orders orders.orderItems orders.orderItems.item').exec(function(err, customer){
 
                 if (err) {
-                    console.log('error retrieving customer orders')
+                    console.log('error retrieving customer orders');
                 }
                 else {
                     var orders = customer.orders;

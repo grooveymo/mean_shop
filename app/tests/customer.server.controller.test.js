@@ -73,25 +73,6 @@ describe('[Server] Customer Controller Unit Tests:', function() {
      */
     function loginUser(done, performRequest) {
 
-        agent
-            .post('/auth/signin')
-            .send({ username: 'username', password: 'password' })
-            .end(onResponse);
-        function onResponse(err, res) {
-//            console.log('[SIGNIN CB] : ' + JSON.stringify(res.status));
-            if(err) console.log('[ERROR-login] : ' + err);
-    //        agent.saveCookies(res);
-//            console.log('[SIGNIN CB] : about to perform follow on request.. ');
-            return performRequest(done);
-        }
-    };
-
-    function loginUser2(done, performRequest) {
-
-        agent
-            .post('/auth/signin')
-            .send({ username: 'username2', password: 'password2' })
-            .end(onResponse);
         function onResponse(err, res) {
 //            console.log('[SIGNIN CB] : ' + JSON.stringify(res.status));
             if(err) console.log('[ERROR-login] : ' + err);
@@ -99,7 +80,28 @@ describe('[Server] Customer Controller Unit Tests:', function() {
 //            console.log('[SIGNIN CB] : about to perform follow on request.. ');
             return performRequest(done);
         }
-    };
+
+        agent
+            .post('/auth/signin')
+            .send({ username: 'username', password: 'password' })
+            .end(onResponse);
+    }
+
+    function loginUser2(done, performRequest) {
+
+        function onResponse(err, res) {
+//            console.log('[SIGNIN CB] : ' + JSON.stringify(res.status));
+            if(err) console.log('[ERROR-login] : ' + err);
+            //        agent.saveCookies(res);
+//            console.log('[SIGNIN CB] : about to perform follow on request.. ');
+            return performRequest(done);
+        }
+
+        agent
+            .post('/auth/signin')
+            .send({ username: 'username2', password: 'password2' })
+            .end(onResponse);
+    }
 
     //Utility function to create Test Customer
     var createCustomer = function(prefix) {
@@ -145,7 +147,7 @@ describe('[Server] Customer Controller Unit Tests:', function() {
 
             if(err) console.log('[beforeEach] Error saving user: ' + JSON.stringify(err) );
 
-            console.log('[user] _id : ' + user._id);
+//            console.log('[user] _id : ' + user._id);
 
 //            console.log('[06.02.15] created new User: ' + JSON.stringify(user));
             var personalDetails = {
@@ -193,7 +195,7 @@ describe('[Server] Customer Controller Unit Tests:', function() {
         // Save the new 'User' model instance
         user2.save(function(err) {
             if(err) console.log('[beforeEach] Error saving user: ' + JSON.stringify(err) );
-            console.log('[user2] _id : ' + user2._id);
+//            console.log('[user2] _id : ' + user2._id);
             done();
         });
     });
@@ -234,6 +236,9 @@ describe('[Server] Customer Controller Unit Tests:', function() {
                 .expect(200)
                 .end(function(err, res) {
 //                    console.log('[it2] body : ' + JSON.stringify(res.body));
+                    //The following forces jshint to ignore the 'Expected an assignment or function call and instead saw an expression' warning
+                    //it generates for the line res.body.should.not.be.an.Array;
+                    /*jshint -W030 */
                     res.body.should.not.be.an.Array;
                     res.body.should.be.an.Object;
                     res.body.should.have.property('_id');
@@ -348,11 +353,11 @@ describe('[Server] Customer Controller Unit Tests:', function() {
 
             customer.personalDetails.forename = updatedForename;
             customer.personalDetails.surname = updatedSurname;
-            console.log('[PRE] _id : ' + customer.user);
+//            console.log('[PRE] _id : ' + customer.user);
 
 //            customer.user = user2._id;
 
-            console.log('[POST] _id : ' + customer.user);
+//            console.log('[POST] _id : ' + customer.user);
 
             //authenticate first
             loginUser2(done, function(done){
@@ -362,7 +367,7 @@ describe('[Server] Customer Controller Unit Tests:', function() {
                     .set('Content-Type', 'application/json')
                     .send(customer)
                     .end(function(err, res){
-                        console.log('[EEE] returned response : ' + JSON.stringify(res.error ));
+//                        console.log('[EEE] returned response : ' + JSON.stringify(res.error ));
                         res.should.have.property('error');
                         res.error.should.have.property('status');
                         res.error.status.should.be.equal(403);

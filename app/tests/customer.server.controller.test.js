@@ -63,7 +63,7 @@ var user, customer, user2;
 
 // Create an 'Articles' controller test suite
 
-xdescribe('[Server] Customer Controller Unit Tests:', function() {
+describe('[Server] Customer Controller Unit Tests:', function() {
 
     /**
      * Performs login
